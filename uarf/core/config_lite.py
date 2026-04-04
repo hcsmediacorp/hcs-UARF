@@ -129,35 +129,58 @@ class LiteConfig:
         """
         Automatically adjust settings for low-RAM environments.
         Called by hardware detector.
+        
+        Profiles:
+        - TINY (<512MB): Minimal settings, streaming required
+        - SMALL (512MB-1GB): Small batch, gradient accumulation
+        - MEDIUM (1-2GB): Standard small-model training
+        - LARGE (2-4GB): Full features, larger models
+        - XLARGE (4GB+): All optimizations enabled
         """
         if ram_mb < 512:
-            # Extremely constrained (<512MB)
+            # TINY: Extremely constrained (<512MB)
             self.batch_size = 2
             self.max_seq_len = 128
             self.gradient_accumulation_steps = 8
             self.max_params_millions = 50
             self.streaming = True
         elif ram_mb < 1024:
-            # Very constrained (<1GB)
+            # SMALL: Very constrained (<1GB)
             self.batch_size = 4
             self.max_seq_len = 256
             self.gradient_accumulation_steps = 4
             self.max_params_millions = 100
             self.streaming = True
         elif ram_mb < 2048:
-            # Constrained (<2GB)
+            # MEDIUM: Constrained (<2GB)
             self.batch_size = 8
             self.max_seq_len = 512
             self.gradient_accumulation_steps = 2
             self.max_params_millions = 250
             self.streaming = False
+        elif ram_mb < 4096:
+            # LARGE: Moderate (<4GB)
+            self.batch_size = 16
+            self.max_seq_len = 1024
+            self.gradient_accumulation_steps = 1
+            self.max_params_millions = 500
+            self.streaming = False
+        else:
+            # XLARGE: 4GB+
+            self.batch_size = 32
+            self.max_seq_len = 2048
+            self.gradient_accumulation_steps = 1
+            self.max_params_millions = 1000  # 1B+ params
+            self.streaming = False
         
-        # Always disable torch.compile for low RAM
-        if ram_mb < 4096:
+        # Enable torch.compile only for XLARGE devices
+        if ram_mb >= 4096:
+            self.compile_model = True
+        else:
             self.compile_model = False
         
-        # Enable gradient checkpointing for memory savings
-        self.use_gradient_checkpointing = True
+        # Enable gradient checkpointing for memory savings on small/medium devices
+        self.use_gradient_checkpointing = (ram_mb < 4096)
     
     def validate(self) -> List[str]:
         """Validate configuration and return list of errors."""
