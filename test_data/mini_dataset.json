@@ -1,0 +1,602 @@
+[
+  {
+    "id": 0,
+    "text": "Algorithms solve problems step by step. Deep learning uses neural networks with many layers.",
+    "length": 92,
+    "sentences": 2
+  },
+  {
+    "id": 1,
+    "text": "Scientists processes better models. The quick brown fox jumps over the lazy dog.",
+    "length": 80,
+    "sentences": 2
+  },
+  {
+    "id": 2,
+    "text": "Transformers revolutionized natural language processing. Scientists optimizes efficient algorithms.",
+    "length": 99,
+    "sentences": 2
+  },
+  {
+    "id": 3,
+    "text": "Embeddings represent words as vectors. The quick brown fox jumps over the lazy dog. The algorithm creates the trends. Deep learning uses neural networks with many layers. Training models requires large amounts of data.",
+    "length": 218,
+    "sentences": 5
+  },
+  {
+    "id": 4,
+    "text": "Python is a popular programming language. Gradient descent optimizes model parameters.",
+    "length": 86,
+    "sentences": 2
+  },
+  {
+    "id": 5,
+    "text": "Users improves new solutions. Overfitting occurs when models memorize training data. Neural networks are inspired by the human brain. Engineers trains better models.",
+    "length": 165,
+    "sentences": 4
+  },
+  {
+    "id": 6,
+    "text": "The researcher designs the output. The model optimizes the results. Batch normalization speeds up training.",
+    "length": 107,
+    "sentences": 3
+  },
+  {
+    "id": 7,
+    "text": "Gradient descent optimizes model parameters. Algorithms solve problems step by step. Developers designs the results. The algorithm develops the output.",
+    "length": 151,
+    "sentences": 4
+  },
+  {
+    "id": 8,
+    "text": "Algorithms solve problems step by step. Developers creates new solutions. Training models requires large amounts of data.",
+    "length": 121,
+    "sentences": 3
+  },
+  {
+    "id": 9,
+    "text": "Artificial intelligence is transforming the world. The experiment evaluates the results.",
+    "length": 88,
+    "sentences": 2
+  },
+  {
+    "id": 10,
+    "text": "Engineers creates the patterns. Attention mechanisms focus on relevant information. Batch normalization speeds up training.",
+    "length": 123,
+    "sentences": 3
+  },
+  {
+    "id": 11,
+    "text": "Data science combines statistics and programming. Scientists evaluates better models. Embeddings represent words as vectors.",
+    "length": 124,
+    "sentences": 3
+  },
+  {
+    "id": 12,
+    "text": "Deep learning uses neural networks with many layers. The model analyzes the results. Natural language processing helps computers understand text. The experiment implements the results. Tokenization splits text into smaller units.",
+    "length": 229,
+    "sentences": 5
+  },
+  {
+    "id": 13,
+    "text": "Scientists analyzes efficient algorithms. Developers develops the features. The dataset processes the features. Batch normalization speeds up training. Algorithms solve problems step by step.",
+    "length": 191,
+    "sentences": 5
+  },
+  {
+    "id": 14,
+    "text": "The model designs the features. Scientists implements the output. Natural language processing helps computers understand text.",
+    "length": 126,
+    "sentences": 3
+  },
+  {
+    "id": 15,
+    "text": "The team analyzes the results. The network optimizes the data.",
+    "length": 62,
+    "sentences": 2
+  },
+  {
+    "id": 16,
+    "text": "The model processes the insights. Scientists generates the predictions. Scientists generates the features.",
+    "length": 106,
+    "sentences": 3
+  },
+  {
+    "id": 17,
+    "text": "Scientists creates the output. The experiment designs efficient algorithms. Transformers revolutionized natural language processing. Data science combines statistics and programming. Training models requires large amounts of data.",
+    "length": 230,
+    "sentences": 5
+  },
+  {
+    "id": 18,
+    "text": "The system implements the output. Artificial intelligence is transforming the world.",
+    "length": 84,
+    "sentences": 2
+  },
+  {
+    "id": 19,
+    "text": "Artificial intelligence is transforming the world. The model develops the output. Attention mechanisms focus on relevant information.",
+    "length": 133,
+    "sentences": 3
+  },
+  {
+    "id": 20,
+    "text": "Users implements better models. Attention mechanisms focus on relevant information. The system processes the results.",
+    "length": 117,
+    "sentences": 3
+  },
+  {
+    "id": 21,
+    "text": "Regularization helps prevent overfitting. Artificial intelligence is transforming the world. Developers processes the data. Training models requires large amounts of data. The model optimizes the output.",
+    "length": 203,
+    "sentences": 5
+  },
+  {
+    "id": 22,
+    "text": "The algorithm tests the predictions. Data science combines statistics and programming. The model improves new solutions.",
+    "length": 120,
+    "sentences": 3
+  },
+  {
+    "id": 23,
+    "text": "Language models predict the next word in a sequence. The model optimizes the predictions.",
+    "length": 89,
+    "sentences": 2
+  },
+  {
+    "id": 24,
+    "text": "Computer vision enables machines to interpret images. The researcher generates the trends. Overfitting occurs when models memorize training data. Batch normalization speeds up training. Language models predict the next word in a sequence.",
+    "length": 238,
+    "sentences": 5
+  },
+  {
+    "id": 25,
+    "text": "Neural networks are inspired by the human brain. Artificial intelligence is transforming the world. Scientists analyzes the patterns. Embeddings represent words as vectors. Transformers revolutionized natural language processing.",
+    "length": 229,
+    "sentences": 5
+  },
+  {
+    "id": 26,
+    "text": "Transformers revolutionized natural language processing. Natural language processing helps computers understand text. Machine learning models can learn from data.",
+    "length": 162,
+    "sentences": 3
+  },
+  {
+    "id": 27,
+    "text": "Embeddings represent words as vectors. Tokenization splits text into smaller units. Machine learning models can learn from data.",
+    "length": 128,
+    "sentences": 3
+  },
+  {
+    "id": 28,
+    "text": "Engineers develops the patterns. The system designs the patterns. Overfitting occurs when models memorize training data. Neural networks are inspired by the human brain. Machine learning models can learn from data.",
+    "length": 214,
+    "sentences": 5
+  },
+  {
+    "id": 29,
+    "text": "Embeddings represent words as vectors. The model develops the output.",
+    "length": 69,
+    "sentences": 2
+  },
+  {
+    "id": 30,
+    "text": "Gradient descent optimizes model parameters. The system trains the features. Language models predict the next word in a sequence. Engineers designs new solutions.",
+    "length": 162,
+    "sentences": 4
+  },
+  {
+    "id": 31,
+    "text": "Scientists evaluates efficient algorithms. Deep learning uses neural networks with many layers.",
+    "length": 95,
+    "sentences": 2
+  },
+  {
+    "id": 32,
+    "text": "Python is a popular programming language. The algorithm evaluates the features. Users trains the output. The network develops the insights.",
+    "length": 139,
+    "sentences": 4
+  },
+  {
+    "id": 33,
+    "text": "The researcher processes efficient algorithms. Algorithms solve problems step by step. Training models requires large amounts of data. Developers evaluates the predictions.",
+    "length": 172,
+    "sentences": 4
+  },
+  {
+    "id": 34,
+    "text": "The experiment develops the data. Deep learning uses neural networks with many layers. The dataset implements new solutions. Deep learning uses neural networks with many layers. Gradient descent optimizes model parameters.",
+    "length": 222,
+    "sentences": 5
+  },
+  {
+    "id": 35,
+    "text": "The system designs the output. The dataset develops the trends.",
+    "length": 63,
+    "sentences": 2
+  },
+  {
+    "id": 36,
+    "text": "The system generates the predictions. The researcher generates the patterns. The experiment designs the output.",
+    "length": 111,
+    "sentences": 3
+  },
+  {
+    "id": 37,
+    "text": "Python is a popular programming language. Artificial intelligence is transforming the world. The system optimizes the insights. Data science combines statistics and programming.",
+    "length": 177,
+    "sentences": 4
+  },
+  {
+    "id": 38,
+    "text": "Computer vision enables machines to interpret images. Algorithms solve problems step by step. The network trains efficient algorithms.",
+    "length": 134,
+    "sentences": 3
+  },
+  {
+    "id": 39,
+    "text": "Scientists trains the data. Algorithms solve problems step by step. Algorithms solve problems step by step. Tokenization splits text into smaller units. Training models requires large amounts of data.",
+    "length": 200,
+    "sentences": 5
+  },
+  {
+    "id": 40,
+    "text": "Scientists processes the trends. The system evaluates the data. The researcher develops new solutions. Users creates efficient algorithms. Regularization helps prevent overfitting.",
+    "length": 180,
+    "sentences": 5
+  },
+  {
+    "id": 41,
+    "text": "The dataset implements the patterns. The model creates the features.",
+    "length": 68,
+    "sentences": 2
+  },
+  {
+    "id": 42,
+    "text": "The dataset tests the features. The system tests efficient algorithms. Developers creates the predictions. The network tests new solutions.",
+    "length": 139,
+    "sentences": 4
+  },
+  {
+    "id": 43,
+    "text": "Computer vision enables machines to interpret images. Embeddings represent words as vectors.",
+    "length": 92,
+    "sentences": 2
+  },
+  {
+    "id": 44,
+    "text": "Batch normalization speeds up training. Scientists improves the predictions. The network develops efficient algorithms. The dataset processes the output.",
+    "length": 153,
+    "sentences": 4
+  },
+  {
+    "id": 45,
+    "text": "Computer vision enables machines to interpret images. Artificial intelligence is transforming the world. Attention mechanisms focus on relevant information. The model improves the trends.",
+    "length": 187,
+    "sentences": 4
+  },
+  {
+    "id": 46,
+    "text": "The experiment improves the trends. The quick brown fox jumps over the lazy dog. The model tests the output.",
+    "length": 108,
+    "sentences": 3
+  },
+  {
+    "id": 47,
+    "text": "Users develops the insights. Data science combines statistics and programming. The model improves the predictions.",
+    "length": 114,
+    "sentences": 3
+  },
+  {
+    "id": 48,
+    "text": "Scientists implements the patterns. The team implements new solutions. Language models predict the next word in a sequence. Natural language processing helps computers understand text. The team improves the features.",
+    "length": 216,
+    "sentences": 5
+  },
+  {
+    "id": 49,
+    "text": "The network develops the insights. The network improves the results. The system evaluates the patterns.",
+    "length": 103,
+    "sentences": 3
+  },
+  {
+    "id": 50,
+    "text": "The model generates the predictions. Deep learning uses neural networks with many layers. The model tests the trends. Batch normalization speeds up training.",
+    "length": 157,
+    "sentences": 4
+  },
+  {
+    "id": 51,
+    "text": "Regularization helps prevent overfitting. Embeddings represent words as vectors. The researcher implements the trends. Gradient descent optimizes model parameters. Overfitting occurs when models memorize training data.",
+    "length": 218,
+    "sentences": 5
+  },
+  {
+    "id": 52,
+    "text": "Users develops better models. The team optimizes the features. The quick brown fox jumps over the lazy dog. Overfitting occurs when models memorize training data. The team generates better models.",
+    "length": 196,
+    "sentences": 5
+  },
+  {
+    "id": 53,
+    "text": "Engineers implements efficient algorithms. Regularization helps prevent overfitting.",
+    "length": 84,
+    "sentences": 2
+  },
+  {
+    "id": 54,
+    "text": "The algorithm analyzes the features. Computer vision enables machines to interpret images. Training models requires large amounts of data.",
+    "length": 138,
+    "sentences": 3
+  },
+  {
+    "id": 55,
+    "text": "Regularization helps prevent overfitting. Machine learning models can learn from data. Language models predict the next word in a sequence. Gradient descent optimizes model parameters. Machine learning models can learn from data.",
+    "length": 229,
+    "sentences": 5
+  },
+  {
+    "id": 56,
+    "text": "The system optimizes the data. The system generates the insights.",
+    "length": 65,
+    "sentences": 2
+  },
+  {
+    "id": 57,
+    "text": "The system improves the features. The algorithm implements better models.",
+    "length": 73,
+    "sentences": 2
+  },
+  {
+    "id": 58,
+    "text": "The algorithm evaluates the results. The network implements efficient algorithms.",
+    "length": 81,
+    "sentences": 2
+  },
+  {
+    "id": 59,
+    "text": "Computer vision enables machines to interpret images. Data science combines statistics and programming. Neural networks are inspired by the human brain. Engineers processes better models. The dataset develops the trends.",
+    "length": 220,
+    "sentences": 5
+  },
+  {
+    "id": 60,
+    "text": "Training models requires large amounts of data. Regularization helps prevent overfitting. The model tests the patterns. The team creates the predictions.",
+    "length": 153,
+    "sentences": 4
+  },
+  {
+    "id": 61,
+    "text": "Transformers revolutionized natural language processing. The network implements new solutions. The team tests better models. Data science combines statistics and programming. The model evaluates the insights.",
+    "length": 208,
+    "sentences": 5
+  },
+  {
+    "id": 62,
+    "text": "Engineers implements efficient algorithms. The quick brown fox jumps over the lazy dog. Training models requires large amounts of data.",
+    "length": 135,
+    "sentences": 3
+  },
+  {
+    "id": 63,
+    "text": "Gradient descent optimizes model parameters. The dataset evaluates better models. The network develops the data.",
+    "length": 112,
+    "sentences": 3
+  },
+  {
+    "id": 64,
+    "text": "Regularization helps prevent overfitting. Data science combines statistics and programming. Developers creates the insights.",
+    "length": 124,
+    "sentences": 3
+  },
+  {
+    "id": 65,
+    "text": "The model evaluates the output. Data science combines statistics and programming. Embeddings represent words as vectors. Language models predict the next word in a sequence. The experiment creates new solutions.",
+    "length": 211,
+    "sentences": 5
+  },
+  {
+    "id": 66,
+    "text": "Batch normalization speeds up training. Algorithms solve problems step by step. Computer vision enables machines to interpret images. Language models predict the next word in a sequence.",
+    "length": 186,
+    "sentences": 4
+  },
+  {
+    "id": 67,
+    "text": "Attention mechanisms focus on relevant information. Embeddings represent words as vectors. Scientists implements the features.",
+    "length": 126,
+    "sentences": 3
+  },
+  {
+    "id": 68,
+    "text": "The network optimizes the patterns. The quick brown fox jumps over the lazy dog.",
+    "length": 80,
+    "sentences": 2
+  },
+  {
+    "id": 69,
+    "text": "Artificial intelligence is transforming the world. Users generates efficient algorithms. The team processes the data.",
+    "length": 117,
+    "sentences": 3
+  },
+  {
+    "id": 70,
+    "text": "Batch normalization speeds up training. Artificial intelligence is transforming the world. Attention mechanisms focus on relevant information. Machine learning models can learn from data.",
+    "length": 187,
+    "sentences": 4
+  },
+  {
+    "id": 71,
+    "text": "Embeddings represent words as vectors. The researcher generates the predictions. The network processes the output. Regularization helps prevent overfitting. Engineers optimizes new solutions.",
+    "length": 191,
+    "sentences": 5
+  },
+  {
+    "id": 72,
+    "text": "Batch normalization speeds up training. Embeddings represent words as vectors. The network implements better models. Python is a popular programming language. The system designs the output.",
+    "length": 189,
+    "sentences": 5
+  },
+  {
+    "id": 73,
+    "text": "The algorithm optimizes the predictions. The algorithm analyzes the trends. Tokenization splits text into smaller units. Artificial intelligence is transforming the world.",
+    "length": 171,
+    "sentences": 4
+  },
+  {
+    "id": 74,
+    "text": "Neural networks are inspired by the human brain. The team processes efficient algorithms. Algorithms solve problems step by step.",
+    "length": 129,
+    "sentences": 3
+  },
+  {
+    "id": 75,
+    "text": "Language models predict the next word in a sequence. Deep learning uses neural networks with many layers. The algorithm processes the data.",
+    "length": 139,
+    "sentences": 3
+  },
+  {
+    "id": 76,
+    "text": "Engineers creates better models. The team processes the insights. Users tests the features.",
+    "length": 91,
+    "sentences": 3
+  },
+  {
+    "id": 77,
+    "text": "Tokenization splits text into smaller units. Regularization helps prevent overfitting. Engineers evaluates the data. Embeddings represent words as vectors. The researcher designs the features.",
+    "length": 192,
+    "sentences": 5
+  },
+  {
+    "id": 78,
+    "text": "The algorithm improves new solutions. The network generates better models.",
+    "length": 74,
+    "sentences": 2
+  },
+  {
+    "id": 79,
+    "text": "The team processes the insights. Training models requires large amounts of data. Python is a popular programming language. The dataset tests the insights. Overfitting occurs when models memorize training data.",
+    "length": 209,
+    "sentences": 5
+  },
+  {
+    "id": 80,
+    "text": "Training models requires large amounts of data. Python is a popular programming language.",
+    "length": 89,
+    "sentences": 2
+  },
+  {
+    "id": 81,
+    "text": "The researcher designs new solutions. Artificial intelligence is transforming the world. Gradient descent optimizes model parameters. The team designs the insights. The system evaluates new solutions.",
+    "length": 200,
+    "sentences": 5
+  },
+  {
+    "id": 82,
+    "text": "The team creates the insights. Tokenization splits text into smaller units. Users generates the features.",
+    "length": 105,
+    "sentences": 3
+  },
+  {
+    "id": 83,
+    "text": "The model optimizes the results. Python is a popular programming language.",
+    "length": 74,
+    "sentences": 2
+  },
+  {
+    "id": 84,
+    "text": "Neural networks are inspired by the human brain. The network tests the insights. The system improves new solutions.",
+    "length": 115,
+    "sentences": 3
+  },
+  {
+    "id": 85,
+    "text": "Tokenization splits text into smaller units. The algorithm processes the features. The experiment trains new solutions.",
+    "length": 119,
+    "sentences": 3
+  },
+  {
+    "id": 86,
+    "text": "The network creates the features. Engineers designs the insights. The team develops the insights. Language models predict the next word in a sequence.",
+    "length": 150,
+    "sentences": 4
+  },
+  {
+    "id": 87,
+    "text": "Training models requires large amounts of data. Users optimizes better models. Regularization helps prevent overfitting. Attention mechanisms focus on relevant information. The experiment tests efficient algorithms.",
+    "length": 215,
+    "sentences": 5
+  },
+  {
+    "id": 88,
+    "text": "Artificial intelligence is transforming the world. Embeddings represent words as vectors. Python is a popular programming language.",
+    "length": 131,
+    "sentences": 3
+  },
+  {
+    "id": 89,
+    "text": "Batch normalization speeds up training. Deep learning uses neural networks with many layers. Deep learning uses neural networks with many layers. Algorithms solve problems step by step. Overfitting occurs when models memorize training data.",
+    "length": 240,
+    "sentences": 5
+  },
+  {
+    "id": 90,
+    "text": "Developers develops the trends. Developers creates the insights.",
+    "length": 64,
+    "sentences": 2
+  },
+  {
+    "id": 91,
+    "text": "The system designs efficient algorithms. The system creates the results.",
+    "length": 72,
+    "sentences": 2
+  },
+  {
+    "id": 92,
+    "text": "Developers creates the results. Neural networks are inspired by the human brain. The researcher trains the data. Gradient descent optimizes model parameters. Data science combines statistics and programming.",
+    "length": 207,
+    "sentences": 5
+  },
+  {
+    "id": 93,
+    "text": "The algorithm generates the predictions. Overfitting occurs when models memorize training data. The system improves better models. Batch normalization speeds up training. The team evaluates efficient algorithms.",
+    "length": 211,
+    "sentences": 5
+  },
+  {
+    "id": 94,
+    "text": "The team evaluates efficient algorithms. The model improves the patterns.",
+    "length": 73,
+    "sentences": 2
+  },
+  {
+    "id": 95,
+    "text": "The experiment creates the features. Neural networks are inspired by the human brain. Overfitting occurs when models memorize training data. The model optimizes the trends.",
+    "length": 172,
+    "sentences": 4
+  },
+  {
+    "id": 96,
+    "text": "Users evaluates the data. Developers tests the features. Artificial intelligence is transforming the world. Users improves the features.",
+    "length": 136,
+    "sentences": 4
+  },
+  {
+    "id": 97,
+    "text": "The dataset optimizes efficient algorithms. Algorithms solve problems step by step. Users designs efficient algorithms.",
+    "length": 119,
+    "sentences": 3
+  },
+  {
+    "id": 98,
+    "text": "Developers designs the data. Batch normalization speeds up training. Gradient descent optimizes model parameters.",
+    "length": 113,
+    "sentences": 3
+  },
+  {
+    "id": 99,
+    "text": "Neural networks are inspired by the human brain. Regularization helps prevent overfitting. Deep learning uses neural networks with many layers.",
+    "length": 143,
+    "sentences": 3
+  }
+]

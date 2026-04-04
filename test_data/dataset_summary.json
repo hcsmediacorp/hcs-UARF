@@ -1,0 +1,13 @@
+{
+  "created_by": "UARF TestDatasetGenerator",
+  "seed": 42,
+  "datasets": {
+    "mini": "test_data/mini_dataset.json",
+    "small": "test_data/small_dataset.json",
+    "medium": "test_data/medium_dataset.json",
+    "jsonl": "test_data/dataset.jsonl",
+    "train": "test_data/train.json",
+    "val": "test_data/val.json"
+  },
+  "total_samples": 4600
+}

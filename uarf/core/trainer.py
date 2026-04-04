@@ -156,15 +156,41 @@ class UniversalTrainer:
     
     def prepare_data(self):
         """Bereitet Datensätze vor"""
-        from datasets import load_dataset
+        import os
+        from pathlib import Path
         
         print(f"\n📊 Lade Dataset: {self.config.dataset_name}")
         
-        # Dataset laden
-        dataset = load_dataset(
-            self.config.dataset_name,
-            split=self.config.dataset_split
-        )
+        # Prüfen ob es sich um einen lokalen Pfad handelt
+        dataset_path = Path(self.config.dataset_name)
+        
+        if dataset_path.exists():
+            # Lokales Dataset laden
+            from uarf.data.local_loader import load_local_dataset
+            
+            try:
+                dataset = load_local_dataset(
+                    str(dataset_path),
+                    split=self.config.dataset_split
+                )
+                print(f"   ✓ Lokales Dataset geladen: {dataset_path}")
+            except Exception as e:
+                print(f"   ⚠️  Fehler beim Laden des lokalen Datasets: {e}")
+                print("   → Wechsel zu synthetischem Dataset")
+                dataset = self._create_synthetic_dataset()
+        else:
+            # Versuche HuggingFace Dataset zu laden
+            try:
+                from datasets import load_dataset
+                dataset = load_dataset(
+                    self.config.dataset_name,
+                    split=self.config.dataset_split
+                )
+                print(f"   ✓ HuggingFace Dataset geladen: {self.config.dataset_name}")
+            except Exception as e:
+                print(f"   ⚠️  HuggingFace Dataset nicht verfügbar: {e}")
+                print("   → Wechsel zu synthetischem Dataset")
+                dataset = self._create_synthetic_dataset()
         
         # Train/Validation Split
         if self.config.val_split_ratio > 0:
@@ -177,8 +203,9 @@ class UniversalTrainer:
         
         # Tokenization
         def tokenize_function(examples):
+            text_key = 'text' if 'text' in examples else list(examples.keys())[0]
             return self.tokenizer(
-                examples['text'] if 'text' in examples else examples[list(examples.keys())[0]],
+                examples[text_key],
                 truncation=True,
                 max_length=self.config.max_seq_len,
                 padding='max_length'
@@ -220,6 +247,37 @@ class UniversalTrainer:
         print(f"✅ Daten vorbereitet: {len(tokenized_train)} Trainings-Samples")
         if val_dataset:
             print(f"   Validierung: {len(tokenized_val)} Samples")
+    
+    def _create_synthetic_dataset(self, size: int = 1000):
+        """Erstellt ein synthetisches Dataset für Tests"""
+        from datasets import Dataset
+        import random
+        
+        print(f"   🔄 Erstelle synthetisches Dataset ({size} Samples)...")
+        
+        # Einfache Wortliste für synthetischen Text
+        words = [
+            "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
+            "have", "has", "had", "do", "does", "did", "will", "would", "could", "should",
+            "may", "might", "must", "shall", "can", "need", "dare", "ought", "used",
+            "machine", "learning", "model", "data", "training", "algorithm",
+            "neural", "network", "deep", "artificial", "intelligence",
+            "python", "code", "program", "function", "variable", "loop",
+            "tensor", "gradient", "optimization", "loss", "accuracy"
+        ]
+        
+        texts = []
+        for i in range(size):
+            # Zufällige Sätze generieren
+            num_words = random.randint(20, 50)
+            sentence = " ".join(random.choices(words, k=num_words))
+            sentence = sentence.capitalize() + "."
+            texts.append(sentence)
+        
+        data = {'text': texts, 'id': list(range(size))}
+        dataset = Dataset.from_dict(data)
+        
+        return dataset
     
     def setup_optimizer(self):
         """Richtet Optimizer und Scheduler ein"""
