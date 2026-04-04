@@ -3,6 +3,7 @@ Hardware Detector - Erkennt automatisch verfügbare Hardware-Ressourcen
 und passt Konfigurationen entsprechend an.
 """
 
+import os
 import platform
 import psutil
 import subprocess
