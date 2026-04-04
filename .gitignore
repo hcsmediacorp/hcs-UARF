@@ -1,42 +1,31 @@
 ```
-# Python
-__pycache__/
+# Compiled Python files
 *.pyc
-*.pyo
-*.pyd
-*.py~
-*.py.class
-*.py.cpython-312.pyc
+__pycache__/
 
-# Distribution / packaging
-.eggs/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Distribution files
+dist/
+*.whl
+*.tar.gz
+
+# Coverage
+.coverage
 
 # Dependencies
 .venv/
 venv/
-.env
-.env.local
-.env.
+node_modules/
 
-# Logs
+# Logs and temp files
 *.log
-
-# Editor
-.vscode/
-.idea/
-*.swp
-*.swo
 *.tmp
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
+# Editors
+.vscode/
+.idea/
 
-# MyPy
-.mypy_cache/
+# Environment
+.env
+.env.local
+.env.*
 ```

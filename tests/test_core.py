@@ -110,9 +110,9 @@ class TestUARFConfig:
         """Test validation with invalid config"""
         config = UARFConfig(
             batch_size=0,  # Invalid: must be >= 1
-            max_seq_len=32,  # Invalid: must be >= 64
+            max_seq_len=16,  # Invalid: must be >= 32
             learning_rate=-1e-4,  # Invalid: must be > 0
-            time_budget_seconds=30,  # Invalid: must be >= 60
+            time_budget_seconds=20,  # Invalid: must be >= 30
             warmup_ratio=1.5,  # Invalid: must be between 0 and 1
             precision='invalid',  # Invalid
             lr_scheduler='invalid',  # Invalid
