@@ -1,0 +1,53 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-minimal:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install torch --index-url https://download.pytorch.org/whl/cpu
+        pip install transformers datasets accelerate tqdm psutil
+        pip install pytest
+    
+    - name: Run minimal tests
+      run: |
+        python -c "from uarf import HardwareDetector, UARFConfig; print('Import successful')"
+        python -c "from uarf.core.hardware_detector import HardwareDetector; d = HardwareDetector(); d.print_summary()"
+        python -m pytest tests/test_core.py -v
+
+  test-full:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pytest pytest-cov
+    
+    - name: Run all tests
+      run: |
+        python -m pytest tests/ -v --cov=uarf --cov-report=term-missing
