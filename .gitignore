@@ -1,12 +1,9 @@
-```gitignore
-# Python compiled files
-*.pyc
+```
+# Python
 __pycache__/
-
-# Dependencies
-.venv/
-venv/
-node_modules/
+*.pyc
+*.pyo
+*.pyd
 
 # Logs and temp files
 *.log
@@ -21,14 +18,17 @@ node_modules/
 .vscode/
 .idea/
 
-# Coverage
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
 .coverage
-coverage/
 htmlcov/
-
-# MyPy
 .mypy_cache/
-
-# Pytest
 .pytest_cache/
 ```
