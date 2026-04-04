@@ -8,36 +8,55 @@ NOTE: Heavy imports (torch, transformers) are deferred to lazy loading.
 Import registry functions directly from uarf.models.registry for low-RAM operation.
 """
 
-from typing import Dict, List, Optional, Any, Type
+from typing import Dict, List, Optional, Any, Type, Tuple, Union
 
 
 def _lazy_import_torch():
     """Lazy import torch only when needed."""
-    import torch
-    import torch.nn as nn
-    return torch, nn
+    try:
+        import torch
+        import torch.nn as nn
+        return torch, nn
+    except ImportError:
+        raise ImportError(
+            "PyTorch is required for model loading. "
+            "Install with: pip install torch"
+        )
 
 
 def _lazy_import_transformers():
     """Lazy import transformers only when needed."""
-    from transformers import (
-        AutoModelForCausalLM,
-        AutoModelForSequenceClassification,
-        AutoModelForTokenClassification,
-        AutoModelForQuestionAnswering,
-        AutoTokenizer,
-        PreTrainedModel,
-        PreTrainedTokenizer,
-    )
-    return {
-        'AutoModelForCausalLM': AutoModelForCausalLM,
-        'AutoModelForSequenceClassification': AutoModelForSequenceClassification,
-        'AutoModelForTokenClassification': AutoModelForTokenClassification,
-        'AutoModelForQuestionAnswering': AutoModelForQuestionAnswering,
-        'AutoTokenizer': AutoTokenizer,
-        'PreTrainedModel': PreTrainedModel,
-        'PreTrainedTokenizer': PreTrainedTokenizer,
-    }
+    try:
+        from transformers import (
+            AutoModelForCausalLM,
+            AutoModelForSequenceClassification,
+            AutoModelForTokenClassification,
+            AutoModelForQuestionAnswering,
+            AutoTokenizer,
+            PreTrainedModel,
+            PreTrainedTokenizer,
+        )
+        return {
+            'AutoModelForCausalLM': AutoModelForCausalLM,
+            'AutoModelForSequenceClassification': AutoModelForSequenceClassification,
+            'AutoModelForTokenClassification': AutoModelForTokenClassification,
+            'AutoModelForQuestionAnswering': AutoModelForQuestionAnswering,
+            'AutoTokenizer': AutoTokenizer,
+            'PreTrainedModel': PreTrainedModel,
+            'PreTrainedTokenizer': PreTrainedTokenizer,
+        }
+    except ImportError:
+        raise ImportError(
+            "Transformers is required for model loading. "
+            "Install with: pip install transformers"
+        )
+
+
+# Type aliases for torch-free usage
+DeviceType = Union[str, Any]  # Will be torch.device when torch is available
+DtypeType = Any  # Will be torch.dtype when torch is available
+ModelType = Any  # Will be PreTrainedModel when transformers is available
+
 
 from ..core.config import UARFConfig
 
@@ -302,10 +321,13 @@ class ModelLoader:
                 self.model.config._attn_implementation = "sdpa"
                 print("✅ SDPA attention enabled (MPS)")
     
-    def load_from_checkpoint(self, checkpoint_path: str, device: torch.device) -> PreTrainedModel:
+    def load_from_checkpoint(self, checkpoint_path: str, device: DeviceType) -> ModelType:
         """Load model from a local checkpoint."""
         print(f"\n📥 Loading from checkpoint: {checkpoint_path}")
         
+        torch, _ = _lazy_import_torch()
+        transformers = _lazy_import_transformers()
+        AutoTokenizer = transformers['AutoTokenizer']
         model_class = self._get_model_class()
         
         self.model = model_class.from_pretrained(
@@ -336,8 +358,12 @@ class QuantizedModelLoader(ModelLoader):
         super().__init__(config)
         self.quantization_config = quantization_config or {}
     
-    def load_quantized_model(self, device: torch.device) -> PreTrainedModel:
+    def load_quantized_model(self, device: DeviceType) -> ModelType:
         """Load model with quantization applied."""
+        torch, _ = _lazy_import_torch()
+        transformers = _lazy_import_transformers()
+        AutoTokenizer = transformers['AutoTokenizer']
+        
         from transformers import BitsAndBytesConfig
         
         # Default 4-bit quantization
@@ -372,7 +398,7 @@ class QuantizedModelLoader(ModelLoader):
         return self.model
 
 
-def create_model(config: UARFConfig, device: torch.device, dtype: torch.dtype) -> tuple:
+def create_model(config: UARFConfig, device: DeviceType, dtype: DtypeType) -> Tuple[Any, Any]:
     """
     Factory function to create a model and tokenizer.
     
@@ -391,8 +417,8 @@ def create_model(config: UARFConfig, device: torch.device, dtype: torch.dtype) -
     return model, loader.tokenizer
 
 
-def create_quantized_model(config: UARFConfig, device: torch.device, 
-                           quant_config: Optional[Dict] = None) -> tuple:
+def create_quantized_model(config: UARFConfig, device: DeviceType, 
+                           quant_config: Optional[Dict] = None) -> Tuple[Any, Any]:
     """
     Factory function to create a quantized model and tokenizer.
     
