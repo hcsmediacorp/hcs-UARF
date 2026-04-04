@@ -40,10 +40,11 @@ class UniversalTrainer:
     - Cluster (Multi-GPU)
     """
     
-    def __init__(self, config: UARFConfig):
+    def __init__(self, config: UARFConfig, resume_from: Optional[str] = None):
         self.config = config
         self.hardware = HardwareDetector()
         self.metrics = TrainingMetrics()
+        self.resume_from = resume_from
         
         # Device setup
         self.device = self._setup_device()
@@ -317,6 +318,57 @@ class UniversalTrainer:
         
         print(f"💾 Checkpoint gespeichert: {path}")
     
+    def _resume_training(self, checkpoint_path: str):
+        """Setzt Training von einem Checkpoint fort"""
+        print(f"\n📥 Resume Training von: {checkpoint_path}")
+        
+        checkpoint_path = Path(checkpoint_path)
+        
+        if not checkpoint_path.exists():
+            raise FileNotFoundError(f"Checkpoint nicht gefunden: {checkpoint_path}")
+        
+        training_state_file = checkpoint_path / 'training_state.pt'
+        if not training_state_file.exists():
+            raise FileNotFoundError(f"Training state file nicht gefunden: {training_state_file}")
+        
+        # Lade Model und Tokenizer
+        print("  Lade Modell und Tokenizer...")
+        self.model = AutoModelForCausalLM.from_pretrained(
+            str(checkpoint_path),
+            trust_remote_code=self.config.trust_remote_code
+        ).to(self.device)
+        
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            str(checkpoint_path),
+            trust_remote_code=self.config.trust_remote_code
+        )
+        
+        # Lade Training State
+        print("  Lade Training State...")
+        training_state = torch.load(training_state_file, map_location=self.device)
+        
+        self.global_step = training_state.get('global_step', 0)
+        self.metrics = training_state.get('metrics', self.metrics)
+        
+        # Setup Optimizer und Scheduler
+        self.setup_optimizer()
+        
+        # Lade Optimizer State
+        if 'optimizer' in training_state and self.optimizer is not None:
+            print("  Lade Optimizer State...")
+            self.optimizer.load_state_dict(training_state['optimizer'])
+        
+        # Lade Scheduler State
+        if 'scheduler' in training_state and self.scheduler is not None:
+            print("  Lade Scheduler State...")
+            self.scheduler.load_state_dict(training_state['scheduler'])
+        
+        # Prepare Data
+        self.prepare_data()
+        
+        print(f"✅ Resume erfolgreich: Step {self.global_step:,}")
+    
+    
     def train(self):
         """Haupt-Trainingsschleife"""
         print("\n" + "=" * 70)
@@ -331,10 +383,15 @@ class UniversalTrainer:
                 print(f"   - {error}")
             return
         
-        # Setup
-        self.load_model()
-        self.prepare_data()
-        self.setup_optimizer()
+        # Resume Training falls checkpoint angegeben
+        if self.resume_from:
+            self._resume_training(self.resume_from)
+        
+        # Setup (nur wenn nicht resumed)
+        if not self.resume_from or self.model is None:
+            self.load_model()
+            self.prepare_data()
+            self.setup_optimizer()
         
         # Training Loop
         self.start_time = time.time()
