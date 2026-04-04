@@ -270,4 +270,4 @@ MIT
 
 ---
 
-**Built with ❤️ by the UARF Team** | Original concept by [@karpathy](https://github.com/karpathy)
+**made with ❤️ by hcsmedia** | Original concept by [@karpathy](https://github.com/karpathy)

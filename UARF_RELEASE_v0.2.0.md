@@ -188,3 +188,5 @@ Same as UARF base license.
 **Version**: 0.2.0  
 **Release Date**: 2024  
 **Compatibility**: Python 3.8+
+
+**made with ❤️ by hcsmedia**

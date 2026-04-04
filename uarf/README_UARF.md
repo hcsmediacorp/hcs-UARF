@@ -293,6 +293,6 @@ MIT License - siehe [LICENSE](LICENSE) Datei.
 
 ---
 
-**Made with ❤️ for the AI Community**
+**made with ❤️ by hcsmedia**
 
 *"Demokratisierung von ML-Training - für jeden, überall."*
