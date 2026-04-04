@@ -3,20 +3,41 @@ UARF Models - Pre-trained Model Definitions and Loading Utilities
 
 This module provides model architectures, loading utilities, and 
 pre-configured model definitions for various tasks.
+
+NOTE: Heavy imports (torch, transformers) are deferred to lazy loading.
+Import registry functions directly from uarf.models.registry for low-RAM operation.
 """
 
 from typing import Dict, List, Optional, Any, Type
-import torch
-import torch.nn as nn
-from transformers import (
-    AutoModelForCausalLM,
-    AutoModelForSequenceClassification,
-    AutoModelForTokenClassification,
-    AutoModelForQuestionAnswering,
-    AutoTokenizer,
-    PreTrainedModel,
-    PreTrainedTokenizer
-)
+
+
+def _lazy_import_torch():
+    """Lazy import torch only when needed."""
+    import torch
+    import torch.nn as nn
+    return torch, nn
+
+
+def _lazy_import_transformers():
+    """Lazy import transformers only when needed."""
+    from transformers import (
+        AutoModelForCausalLM,
+        AutoModelForSequenceClassification,
+        AutoModelForTokenClassification,
+        AutoModelForQuestionAnswering,
+        AutoTokenizer,
+        PreTrainedModel,
+        PreTrainedTokenizer,
+    )
+    return {
+        'AutoModelForCausalLM': AutoModelForCausalLM,
+        'AutoModelForSequenceClassification': AutoModelForSequenceClassification,
+        'AutoModelForTokenClassification': AutoModelForTokenClassification,
+        'AutoModelForQuestionAnswering': AutoModelForQuestionAnswering,
+        'AutoTokenizer': AutoTokenizer,
+        'PreTrainedModel': PreTrainedModel,
+        'PreTrainedTokenizer': PreTrainedTokenizer,
+    }
 
 from ..core.config import UARFConfig
 
@@ -169,11 +190,14 @@ class ModelLoader:
     
     def __init__(self, config: UARFConfig):
         self.config = config
-        self.model: Optional[PreTrainedModel] = None
-        self.tokenizer: Optional[PreTrainedTokenizer] = None
+        self.model: Optional[Any] = None
+        self.tokenizer: Optional[Any] = None
     
-    def load_tokenizer(self) -> PreTrainedTokenizer:
+    def load_tokenizer(self) -> Any:
         """Load tokenizer with optimal settings."""
+        transformers = _lazy_import_transformers()
+        AutoTokenizer = transformers['AutoTokenizer']
+        
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.config.model_id,
             trust_remote_code=self.config.trust_remote_code,
@@ -187,7 +211,7 @@ class ModelLoader:
         
         return self.tokenizer
     
-    def load_model(self, device: torch.device, dtype: torch.dtype) -> PreTrainedModel:
+    def load_model(self, device: Any, dtype: Any) -> Any:
         """
         Load model with memory-efficient strategy.
         
@@ -198,6 +222,12 @@ class ModelLoader:
         Returns:
             Loaded PyTorch model
         """
+        torch, _ = _lazy_import_torch()
+        transformers = _lazy_import_transformers()
+        AutoConfig = transformers['AutoTokenizer'].__class__.__bases__[0].__class__  # Hack to get module
+        
+        from transformers import AutoConfig
+        
         print(f"\n📦 Loading model: {self.config.model_id}")
         
         # Determine model class based on task
@@ -225,22 +255,24 @@ class ModelLoader:
         
         return self.model
     
-    def _get_model_class(self) -> Type[PreTrainedModel]:
+    def _get_model_class(self) -> Type[Any]:
         """Determine the appropriate model class for the task."""
+        transformers = _lazy_import_transformers()
+        
         task_mapping = {
-            "text-generation": AutoModelForCausalLM,
-            "causal-lm": AutoModelForCausalLM,
-            "text-classification": AutoModelForSequenceClassification,
-            "sequence-classification": AutoModelForSequenceClassification,
-            "token-classification": AutoModelForTokenClassification,
-            "question-answering": AutoModelForQuestionAnswering,
-            "qa": AutoModelForQuestionAnswering,
+            "text-generation": transformers['AutoModelForCausalLM'],
+            "causal-lm": transformers['AutoModelForCausalLM'],
+            "text-classification": transformers['AutoModelForSequenceClassification'],
+            "sequence-classification": transformers['AutoModelForSequenceClassification'],
+            "token-classification": transformers['AutoModelForTokenClassification'],
+            "question-answering": transformers['AutoModelForQuestionAnswering'],
+            "qa": transformers['AutoModelForQuestionAnswering'],
         }
         
         task = self.config.task_type or "text-generation"
-        return task_mapping.get(task, AutoModelForCausalLM)
+        return task_mapping.get(task, transformers['AutoModelForCausalLM'])
     
-    def _apply_optimizations(self, device: torch.device, dtype: torch.dtype):
+    def _apply_optimizations(self, device: Any, dtype: Any):
         """Apply performance optimizations to the model."""
         
         # Gradient Checkpointing
