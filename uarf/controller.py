@@ -81,7 +81,19 @@ class UARFController:
         if config:
             self.config = config
         else:
-            self.config = quick_config(ram_mb=self.available_ram_mb, debug=debug, **kwargs)
+            # Load from environment first, then apply ram_mb and debug overrides
+            self.config = LiteConfig.from_env()
+            # Apply ram_mb override (triggers profile adaptation)
+            if ram_mb:
+                self.config.max_ram_mb = ram_mb
+                self.config.apply_low_ram_profile(ram_mb)
+            # Apply debug override
+            if debug:
+                self.config.debug_mode = debug
+            # Apply any additional kwargs
+            for key, value in kwargs.items():
+                if hasattr(self.config, key):
+                    setattr(self.config, key, value)
         
         self._logger.info(f"UARF Controller initialized ({self.available_ram_mb:.0f}MB RAM)")
     
