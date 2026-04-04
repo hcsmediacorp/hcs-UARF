@@ -10,10 +10,10 @@ from typing import Optional, Dict, Any, List
 from pathlib import Path
 from dataclasses import dataclass
 
-from .core.config_lite import LiteConfig, load_config, quick_config
-from .core.device_manager import DeviceManager, select_device
-from .models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model
-from .logging.debug_logger import DebugLogger, setup_logger, get_logger
+from core.config_lite import LiteConfig, load_config, quick_config
+from core.device_manager import DeviceManager, select_device
+from models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model
+from logging_module.debug_logger import DebugLogger, setup_logger, get_logger
 
 
 @dataclass

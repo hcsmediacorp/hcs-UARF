@@ -11,13 +11,18 @@ import sys
 import os
 from pathlib import Path
 
+# Add parent directory to path for imports when running as module
+_script_dir = Path(__file__).parent.parent
+if str(_script_dir) not in sys.path:
+    sys.path.insert(0, str(_script_dir))
+
 
 def _ensure_environment(profile: str = None, skip_env: bool = False):
     """Ensure proper environment is active before running commands"""
     if skip_env or os.environ.get('UARF_ENV_SETUP_DONE') == '1':
         return True
     
-    from ..utils.env_manager import UnifiedEnvManager, EnvProfile
+    from utils.env_manager import UnifiedEnvManager, EnvProfile
     
     manager = UnifiedEnvManager()
     
@@ -194,7 +199,7 @@ Quick Start:
 
 def _handle_env_command(args):
     """Handle environment management command"""
-    from ..utils.env_manager import UnifiedEnvManager, EnvProfile
+    from utils.env_manager import UnifiedEnvManager, EnvProfile
     
     manager = UnifiedEnvManager()
     
@@ -237,7 +242,7 @@ def _handle_env_command(args):
 
 def _handle_auto_command(args):
     """Handle full auto mode command"""
-    from ..controller import UARFController
+    from controller import UARFController
     
     print("="*60)
     print("UARF Auto Mode - Full Automation")
@@ -284,9 +289,9 @@ def _handle_auto_command(args):
 
 def _handle_run_command(args):
     """Handle run command"""
-    from ..core.hardware_detector import HardwareDetector
-    from ..core.config_lite import LiteConfig
-    from ..core.trainer import UniversalTrainer
+    from core.hardware_detector import HardwareDetector
+    from core.config_lite import LiteConfig
+    from core.trainer import UniversalTrainer
     
     print("="*60)
     print("UARF Training Run")
@@ -358,13 +363,13 @@ def _run_demo_mode(config, detector):
     import time
     
     # Get device - use device_manager for this
-    from ..core.device_manager import DeviceManager
+    from core.device_manager import DeviceManager
     dm = DeviceManager(config.device or "auto")
     device = dm.device
     print(f"   Device: {device}")
     
     # Create tiny model
-    from ..models.registry import create_tiny_model
+    from models.registry import create_tiny_model
     
     vocab_size = 8192
     model = create_tiny_model(
@@ -439,8 +444,8 @@ def _run_demo_mode(config, detector):
 
 def _handle_suggest_command(args):
     """Handle suggest command"""
-    from ..core.hardware_detector import HardwareDetector
-    from ..core.model_selector import ModelSelector
+    from core.hardware_detector import HardwareDetector
+    from core.model_selector import ModelSelector
     
     print("="*60)
     print("UARF Model Recommendations")
@@ -450,7 +455,7 @@ def _handle_suggest_command(args):
     detector.print_summary()
     
     selector = ModelSelector(detector.specs)
-    selector.print_suggestions(args.task, limit=args.limit)
+    selector.print_suggestions(args.task)
 
 
 def _handle_export_command(args):
@@ -506,7 +511,7 @@ def _handle_export_command(args):
     # Export based on format
     if args.format == 'gguf':
         try:
-            from ..exports.gguf import export_to_gguf
+            from exports.gguf import export_to_gguf
             
             training_state = {}
             if training_state_file.exists():
@@ -543,7 +548,7 @@ def _handle_export_command(args):
 
 def _handle_detect_command(args):
     """Handle detect command"""
-    from ..core.hardware_detector import HardwareDetector
+    from core.hardware_detector import HardwareDetector
     
     detector = HardwareDetector()
     

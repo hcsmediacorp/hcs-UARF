@@ -10,10 +10,10 @@ __version__ = "2.0.0"
 __author__ = "hcsmedia"
 
 # Core components (lazy-loaded)
-from .core.config_lite import LiteConfig, load_config, quick_config
-from .core.device_manager import DeviceManager, select_device, get_device
-from .models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model, list_tiny_models
-from .logging.debug_logger import DebugLogger, setup_logger, get_logger, debug, info, warning, error, success
+from core.config_lite import LiteConfig, load_config, quick_config
+from core.device_manager import DeviceManager, select_device, get_device
+from models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model, list_tiny_models
+from logging_module.debug_logger import DebugLogger, setup_logger, get_logger, debug, info, warning, error, success
 from .controller import UARFController, quick_start, detect, suggest, TaskResult
 
 # Convenience imports
