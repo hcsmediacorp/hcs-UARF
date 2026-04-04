@@ -50,28 +50,6 @@ dev = [
     "build>=0.10.0",
     "twine>=4.0.0",
 ]
-cuda = [
-    "torch>=2.0.0+cu118",
-]
-cpu = [
-    "torch>=2.0.0+cpu",
-]
-wandb = [
-    "wandb>=0.15.0",
-]
-mlflow = [
-    "mlflow>=2.0.0",
-]
-
-[project.urls]
-Homepage = "https://github.com/hcsmediacorp/hcs-UARF"
-Documentation = "https://github.com/hcsmediacorp/hcs-UARF#readme"
-Repository = "https://github.com/hcsmediacorp/hcs-UARF.git"
-Issues = "https://github.com/hcsmediacorp/hcs-UARF/issues"
-Changelog = "https://github.com/hcsmediacorp/hcs-UARF/blob/main/CHANGELOG.md"
-
-[project.scripts]
-uarf = "uarf.cli.uarf_cli:main"
 
 [tool.setuptools.packages.find]
 include = ["uarf*"]
@@ -82,6 +60,16 @@ uarf = ["py.typed"]
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/hcsmediacorp/hcs-UARF"
+Documentation = "https://github.com/hcsmediacorp/hcs-UARF#readme"
+Repository = "https://github.com/hcsmediacorp/hcs-UARF.git"
+Issues = "https://github.com/hcsmediacorp/hcs-UARF/issues"
+Changelog = "https://github.com/hcsmediacorp/hcs-UARF/blob/main/CHANGELOG.md"
+
+[project.scripts]
+uarf = "uarf.cli.uarf_cli:main"
 
 [tool.black]
 line-length = 100
