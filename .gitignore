@@ -1,6 +1,42 @@
 ```
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py~
+*.py.class
+*.py.cpython-312.pyc
+
+# Distribution / packaging
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Dependencies
+.venv/
+venv/
+.env
+.env.local
+.env.
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# MyPy
+.mypy_cache/
 ```
