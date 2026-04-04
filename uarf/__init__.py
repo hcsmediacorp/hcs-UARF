@@ -13,6 +13,7 @@ from .core.config import UARFConfig
 from .core.trainer import UniversalTrainer
 from .core.model_selector import ModelSelector
 from .core.swap_manager import SwapManager, SwapConfig
+from .auto_mode import AutoMode, auto_train
 
 __all__ = [
     "HardwareDetector",
@@ -21,4 +22,6 @@ __all__ = [
     "ModelSelector",
     "SwapManager",
     "SwapConfig",
+    "AutoMode",
+    "auto_train",
 ]

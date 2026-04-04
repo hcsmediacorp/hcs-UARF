@@ -7,6 +7,7 @@ Ein einfacher Befehl für alle Plattformen.
 import argparse
 import sys
 import os
+from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser(
