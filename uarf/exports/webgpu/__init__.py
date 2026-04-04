@@ -45,7 +45,7 @@ class WebGPUExporter:
             config: WebGPU configuration
         """
         self.config = config or WebGPUConfig()
-        logger.info(f"Initialized WebGPU exporter ({config.precision})")
+        logger.info(f"Initialized WebGPU exporter ({self.config.precision})")
     
     def export(self, model_state: Dict[str, Any], config: Dict[str, Any],
                output_dir: str) -> Path:
