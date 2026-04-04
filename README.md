@@ -1,101 +1,375 @@
-# 🚀 UARF - Universal AutoResearch Framework v0.3.0
+# 🚀 UARF v1.0.0 - Universal AutoResearch Framework
 
-**LLM Training auf JEDEM Gerät** - Linux, Mac, Windows, Termux (Android)
+**LLM Training auf jedem Gerät - Von Android bis Server-Cluster**
 
-## ✨ Neue Features in v0.3.0
+Made with ❤️ by [hcsmedia](https://github.com/hcsmedia)
 
-- **📁 Lokale Datensätze**: Training mit eigenen JSON/JSONL-Daten ohne Internet
-- **🤖 Synthetische Daten**: Automatische Generierung bei fehlenden Datensätzen
-- **⚡ Gradient Checkpointing**: Speichereffizientes Training auch auf wenig RAM
-- **🔧 Flexible Konfiguration**: Minimalanforderungen reduziert (32 seq_len, 30s budget)
-- **✅ Production Ready**: Alle kritischen Fehler behoben
+---
+
+## 🌟 Features
+
+### Auto Mode (Neu!)
+- **Einfach Text pasten** - Der Rest läuft automatisch!
+- Automatische Hardware-Erkennung und Optimierung
+- Intelligente Swap-File Verwaltung für speichereffizientes Training
+- Automatische Modellauswahl basierend auf deiner Hardware
+
+### Manuelles Training
+- Vollständige Kontrolle über alle Parameter
+- Custom Datasets unterstützen (JSON, JSONL, TXT)
+- Fortgeschrittene Konfigurationsoptionen
+
+### Plattform-Unterstützung
+- ✅ **Linux** (Desktop, Server, WSL)
+- ✅ **Windows** (Native, WSL2)
+- ✅ **macOS** (Intel, Apple Silicon)
+- ✅ **Android** (Termux, Root optional)
+- ✅ **Google Colab** (Free & Pro)
+- ✅ **Server-Cluster** (Multi-GPU ready)
+
+### Modell-Auswahl
+Über 15+ vor-konfigurierte Modelle:
+- **Qwen 2.5 Serie** (0.5B - 7B) ⭐ Empfohlen
+- Microsoft Phi-2, Phi-3
+- Google Gemma (2B, 7B)
+- Meta Llama 3.2 (1B, 3B, 8B)
+- TinyLlama (1.1B)
+- SmolLM (360M) für extrem wenig Speicher
+
+---
 
 ## 📦 Installation
 
+### Schnellinstallation (Empfohlen)
+
 ```bash
-# Dependencies
-pip install torch transformers datasets tqdm psutil huggingface_hub
+# Clone Repository
+git clone https://github.com/hcsmedia/uarf.git
+cd uarf
+
+# Installieren
+pip install -e .
+
+# Fertig!
+uarf --help
+```
+
+### Manuelle Installation
+
+```bash
+# Abhängigkeiten installieren
+pip install torch transformers datasets accelerate tqdm psutil
 
 # UARF installieren
-cd /workspace && pip install -e .
+pip install -e .
 ```
+
+### Termux (Android)
+
+```bash
+# Python installieren
+pkg install python rust cmake clang
+
+# Dependencies
+pip install torch numpy psutil
+
+# UARF
+pip install -e .
+```
+
+---
 
 ## 🎯 Schnellstart
 
-### Mit lokalem Dataset
-```python
-from uarf import UARFConfig, UniversalTrainer
+### Auto Mode - Einfachster Weg!
 
+```python
+from uarf import auto_train
+
+# Einfach Text pasten!
+text = """
+Dein Text hier. Das kann alles sein:
+- Eigene Schriften
+- Code-Dokumentation
+- Chat-Verläufe
+- Fachartikel
+"""
+
+# Training starten (automatische Optimierung)
+auto_train(text, time_seconds=300)
+```
+
+### CLI - Auto Mode
+
+```bash
+# Einfaches Training mit Text-Datei
+echo "Dein Trainingstext hier..." > mein_text.txt
+uarf auto --file mein_text.txt --time 300
+```
+
+### Manuelles Training
+
+```python
+from uarf import UARFConfig, UniversalTrainer, HardwareDetector
+
+# Hardware erkennen
+detector = HardwareDetector()
+detector.print_summary()
+hardware_config = detector.get_optimal_config()
+
+# Konfiguration
 config = UARFConfig(
     model_id="Qwen/Qwen2.5-0.5B",
-    dataset_name="./test_data/train.json",
-    batch_size=8,
-    max_seq_len=128,
-    max_steps=100,
-    time_budget_seconds=300
+    dataset_name="./mein_dataset.jsonl",
+    time_budget_seconds=600,
+    batch_size=hardware_config['batch_size'],
+    max_seq_len=hardware_config['max_seq_len'],
+    learning_rate=2e-4,
+    output_dir="./outputs",
 )
 
+# Training starten
 trainer = UniversalTrainer(config)
 trainer.train()
 ```
 
-### Test-Datensätze erstellen
+### CLI - Manuelles Training
+
 ```bash
-python -m uarf.data.test_dataset ./test_data
+# Standard Training
+uarf run --model Qwen/Qwen2.5-0.5B --dataset ./data.jsonl --time 600
+
+# Mit custom Parametern
+uarf run \
+  --model Qwen/Qwen2.5-1.5B \
+  --dataset ./custom_data.jsonl \
+  --time 1800 \
+  --batch-size 32 \
+  --lr 1e-4 \
+  --output-dir ./my_outputs
 ```
 
-### CLI verwenden
-```bash
-uarf detect                    # Hardware erkennen
-uarf run --time 600            # Training starten
-uarf run --dataset ./data.json # Mit eigenem Dataset
+---
+
+## 📊 Dataset-Formate
+
+### JSONL Format (Empfohlen)
+
+```jsonl
+{"id": 1, "text": "Dein Text hier..."}
+{"id": 2, "text": "Weiterer Text..."}
 ```
 
-## 🔧 Minimale Konfiguration (für schnelle Tests)
+### JSON Format
 
+```json
+{
+  "samples": [
+    {"text": "Text 1"},
+    {"text": "Text 2"}
+  ]
+}
+```
+
+### Auto Mode - Text direkt pasten
+
+Im Auto Mode wird dein Text automatisch in Segmente aufgeteilt und optimiert!
+
+---
+
+## 💾 Swap Management (Neu!)
+
+UARF v1.0.0 führt automatisches Swap-Management ein für Training auf Geräten mit wenig RAM:
+
+### Automatisch
 ```python
-config = UARFConfig(
-    batch_size=2,
-    max_seq_len=32,
-    time_budget_seconds=30,
-    max_steps=10,
-    use_gradient_checkpointing=True
-)
+from uarf import SwapManager, SwapConfig
+
+swap = SwapManager(SwapConfig(auto_mode=True))
+swap.setup_auto_swap()
 ```
 
-## 📊 Hardware-Empfehlungen
+### Manuell
+```python
+swap = SwapManager(SwapConfig(auto_mode=False))
+swap.setup_manual_swap(size_gb=8.0)  # 8GB Swap
+```
 
-| RAM | Batch Size | Max Seq Len | Gradient Checkpointing |
-|-----|------------|-------------|------------------------|
-| <2GB | 2-4 | 32-64 | ✓ |
-| 2-4GB | 4-8 | 64-128 | ✓ |
-| 4-8GB | 8-16 | 128-256 | ✗ |
-| 8-16GB | 16-32 | 256-512 | ✗ |
-| >16GB | 32+ | 512+ | ✗ |
+---
 
-## ✅ Getestete Funktionalität
+## 🎮 Hardware Empfehlungen
 
-- ✓ Hardware Detection (CPU, RAM, GPU)
-- ✓ Model Loading (Qwen/Qwen2.5-0.5B)
-- ✓ Local Dataset Loading (JSON/JSONL)
-- ✓ Synthetic Dataset Generation
-- ✓ Tokenization & Data Preparation
-- ✓ Optimizer & Scheduler Setup
-- ✓ Training Loop with Gradient Accumulation
-- ✓ Checkpoint Saving/Loading
-- ✓ Evaluation & Metrics Tracking
+### Minimum (< 4GB RAM)
+- **Modell:** Qwen2.5-0.5B oder SmolLM-360M
+- **Swap:** 4-8GB empfohlen
+- **Batch Size:** 4-8
+- **Sequenzlänge:** 256-512
+
+### Entry-Level (4-8GB RAM)
+- **Modell:** Qwen2.5-1.5B, Phi-2, Gemma-2B
+- **Swap:** 2-4GB optional
+- **Batch Size:** 16-32
+- **Sequenzlänge:** 512-1024
+
+### Mid-Range (8-16GB RAM + GPU)
+- **Modell:** Qwen2.5-3B, Phi-3, Llama-3.2-3B
+- **VRAM:** 4-8GB
+- **Batch Size:** 32-64
+- **Sequenzlänge:** 1024-2048
+
+### High-End (16GB+ RAM + GPU)
+- **Modell:** Qwen2.5-7B, Llama-3-8B, Gemma-7B
+- **VRAM:** 8GB+
+- **Batch Size:** 64-128
+- **Sequenzlänge:** 2048-4096
+
+---
+
+## 🔧 CLI Befehle
+
+```bash
+# Hilfe
+uarf --help
+
+# Hardware erkennen
+uarf detect
+
+# Model recommendations
+uarf suggest
+
+# Auto Mode
+uarf auto --text "Dein Text" --time 300
+
+# Manuelles Training
+uarf run --model MODEL --dataset DATA --time SECONDS
+
+# Export zu GGUF
+uarf export --checkpoint ./outputs/checkpoint --format gguf
+```
+
+---
+
+## 📁 Projektstruktur
+
+```
+uarf/
+├── core/               # Kernmodule
+│   ├── config.py       # Konfiguration
+│   ├── trainer.py      # Training Engine
+│   ├── hardware_detector.py  # Hardware Erkennung
+│   ├── swap_manager.py # Swap Management (NEU!)
+│   └── checkpoint.py   # Checkpointing
+├── auto_mode.py        # Auto Mode (NEU!)
+├── models/             # Modell-Sammlung
+│   └── model_collection.py  # 15+ Modelle (NEU!)
+├── data/               # Daten-Lader
+├── exports/            # Export-Formate
+├── platforms/          # Plattform-Adapter
+└── cli/                # Command Line Interface
+```
+
+---
 
 ## 🧪 Tests
 
 ```bash
-python -m pytest tests/ -v
-python test_uarf_complete.py
+# Alle Tests
+python -m pytest tests/
+
+# Schnelltest
+python -c "from uarf import *; print('UARF ready!')"
 ```
-
-## 📄 Lizenz
-
-MIT License - Frei für Forschung und Bildung
 
 ---
 
-**Version**: 0.3.0 (Stable Release) | **Status**: Production Ready ✅
+## 📝 Beispiele
+
+### Eigene Geschichten trainieren
+
+```python
+from uarf import auto_train
+
+story = """
+Es war einmal ein kleines KI-Modell, das träumte davon,
+große Dinge zu lernen. Jeden Tag las es neue Texte und
+verbesserte sich Schritt für Schritt...
+"""
+
+auto_train(story, time_seconds=180)
+```
+
+### Code-Dokumentation fine-tunen
+
+```python
+code_docs = """
+def calculate_sum(numbers):
+    '''Berechnet die Summe einer Liste von Zahlen.'''
+    return sum(numbers)
+
+def multiply(a, b):
+    '''Multipliziert zwei Zahlen.'''
+    return a * b
+"""
+
+auto_train(code_docs, model_id="Qwen/Qwen2.5-1.5B", time_seconds=300)
+```
+
+---
+
+## 🤝 Contributing
+
+Beiträge sind willkommen! 
+
+1. Fork das Repository
+2. Erstelle einen Feature Branch
+3. Commit deine Änderungen
+4. Push zum Branch
+5. Öffne einen Pull Request
+
+---
+
+## 📄 Lizenz
+
+Apache 2.0 License
+
+---
+
+## 🙏 Danksagungen
+
+- **HuggingFace** für Transformers und Datasets
+- **Meta** für Llama Modelle
+- **Alibaba** für Qwen Modelle
+- **Microsoft** für Phi Modelle
+- **Google** für Gemma Modelle
+- Allen Open-Source Contributors
+
+---
+
+## 📞 Support
+
+- **Issues:** GitHub Issues
+- **Discussions:** GitHub Discussions
+- **Email:** support@hcsmedia.de (coming soon)
+
+---
+
+## 🎉 Changelog v1.0.0
+
+### Neu
+- ✨ **Auto Mode**: Einfach Text pasten, Rest automatisch
+- 💾 **Swap Manager**: Automatisches Swap-File Management
+- 📚 **Model Collection**: 15+ vorkonfigurierte Modelle
+- 🔄 **Memory-Mapped Offloading**: Für sehr große Modelle
+- 🎨 **Verbesserte UX**: Bessere Fehlermeldungen, Progress Bars
+
+### Verbesserungen
+- 🚀 Performance-Optimierungen
+- 🐛 Bugfixes für alle Plattformen
+- 📖 Vollständige Dokumentation
+- ✅ Umfangreiche Tests
+
+---
+
+**Made with ❤️ by hcsmedia**
+
+[GitHub](https://github.com/hcsmedia/uarf) | [Documentation](https://uarf.dev/docs) | [Examples](https://uarf.dev/examples)
