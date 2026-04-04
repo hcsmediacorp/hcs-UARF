@@ -4,35 +4,60 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
-
-# Dependencies
-.venv/
+.Python
+env/
 venv/
-.env
-.env.local
-*.env.*
+.venv/
+.ENV
+.ENV.*
+.venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Build and distribution artifacts
+build/
+dist/
+*.egg
+*.egg-info/
+*.so
+.libs/
+
+# Testing
+.coverage
+coverage/
+htmlcov/
+.nox/
+.tox/
+.coverage.*
 
 # Logs
 *.log
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
+# Environment specific
+.env
+.env.local
+.env.*
+.env.local.*
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Editors
+# IDE and editors
 .vscode/
 .idea/
 *.swp
 *.swo
-*.tmp
-
-# OS
+*~
 .DS_Store
 Thumbs.db
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Icon?
 ```

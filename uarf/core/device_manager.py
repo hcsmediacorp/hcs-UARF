@@ -144,6 +144,7 @@ class DeviceManager:
         Returns:
             torch.dtype
         """
+        import torch
         torch = self._import_torch()
         
         if precision == "auto":
@@ -290,5 +291,6 @@ def select_device(
 # Convenience function
 def get_device(device: str = "auto") -> 'torch.device':
     """Get torch.device quickly."""
+    import torch
     mgr = DeviceManager(device)
     return mgr.device
