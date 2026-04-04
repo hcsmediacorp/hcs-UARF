@@ -329,3 +329,62 @@ def suggest_model(ram_mb: float) -> ModelEntry:
 def list_tiny_models() -> List[ModelEntry]:
     """List all tiny models (<100M params)."""
     return get_registry().list_models(max_params=100)
+
+
+def create_tiny_model(vocab_size: int = 8192, d_model: int = 256, 
+                      n_layers: int = 4, n_heads: int = 8, 
+                      max_seq_len: int = 512):
+    """
+    Create a tiny transformer model for demo/testing purposes.
+    
+    Args:
+        vocab_size: Vocabulary size
+        d_model: Model dimension
+        n_layers: Number of transformer layers
+        n_heads: Number of attention heads
+        max_seq_len: Maximum sequence length
+    
+    Returns:
+        nn.Module: Tiny transformer model
+    """
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    
+    class TinyTransformer(nn.Module):
+        """Minimal transformer for testing and demo."""
+        
+        def __init__(self, vocab_size, d_model, n_layers, n_heads, max_seq_len):
+            super().__init__()
+            self.token_emb = nn.Embedding(vocab_size, d_model)
+            self.pos_emb = nn.Embedding(max_seq_len, d_model)
+            self.layers = nn.ModuleList([
+                nn.TransformerEncoderLayer(
+                    d_model=d_model, 
+                    nhead=n_heads, 
+                    dim_feedforward=d_model*4, 
+                    activation='gelu', 
+                    batch_first=True, 
+                    norm_first=True
+                ) for _ in range(n_layers)
+            ])
+            self.norm = nn.LayerNorm(d_model)
+            self.lm_head = nn.Linear(d_model, vocab_size, bias=False)
+        
+        def forward(self, input_ids, attention_mask=None, targets=None):
+            B, T = input_ids.shape
+            positions = torch.arange(T, device=input_ids.device).unsqueeze(0)
+            h = self.token_emb(input_ids) + self.pos_emb(positions)
+            for layer in self.layers:
+                h = layer(h)
+            h = self.norm(h)
+            logits = self.lm_head(h)
+            
+            if targets is not None:
+                return F.cross_entropy(
+                    logits.view(-1, logits.size(-1)), 
+                    targets.view(-1)
+                )
+            return logits
+    
+    return TinyTransformer(vocab_size, d_model, n_layers, n_heads, max_seq_len)
