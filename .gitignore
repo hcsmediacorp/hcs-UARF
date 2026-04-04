@@ -1,1 +1,41 @@
-Nothing should be ignored based on the provided file changes. The only modified file is 'uarf/controller.py', which is a source code file and should not be added to .gitignore.
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Development
+.venv/
+venv/
+.env
+.env.local
+*.env.*
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Build
+build/
+dist/
+target/
+
+# Testing
+.coverage
+htmlcov/
+.coverage.*
+.cache
+.pytest_cache/
+.mypy_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+```
