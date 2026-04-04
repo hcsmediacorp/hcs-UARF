@@ -71,6 +71,7 @@ class AndroidAdapter(PlatformAdapter):
         gpu_available = False
         gpu_name = None
         try:
+            import torch
             # Check for Vulkan support (PyTorch with Vulkan)
             if hasattr(torch, 'cuda') and torch.cuda.is_available():
                 gpu_available = True

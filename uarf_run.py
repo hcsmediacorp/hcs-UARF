@@ -91,8 +91,7 @@ def main():
     print('='*60)
     hardware = detect_hardware()
     print(f"RAM: {hardware['ram_gb']:.1f} GB, Device: {hardware['device']}")
-    print('
-Creating tiny demo model...')
+    print('\nCreating tiny demo model...')
     tokenizer = AutoTokenizer.from_pretrained('Qwen/Qwen2.5-0.5B')
     tokenizer.pad_token = tokenizer.eos_token
     model = create_tiny_model(vocab_size=min(tokenizer.vocab_size, 8192), d_model=256, n_layers=4, n_heads=8, max_seq_len=args.max_seq_len)
@@ -106,11 +105,9 @@ Creating tiny demo model...')
     
     train_loader = DataLoader(SyntheticDataset(1000, args.max_seq_len, min(tokenizer.vocab_size, 8192)), batch_size=args.batch_size, shuffle=True)
     config = {'batch_size': args.batch_size, 'max_seq_len': args.max_seq_len, 'lr': 2e-4, 'max_steps': max(100, args.time*2), 'time_budget': args.time}
-    print(f'
-Starting training for {args.time}s...')
+    print(f'\nStarting training for {args.time}s...')
     metrics = train_simple(model, tokenizer, train_loader, None, hardware['device'], config)
-    print(f"
-Done! Steps: {metrics['steps']}, Time: {metrics['training_time']:.1f}s")
+    print(f'\nDone! Steps: {metrics["steps"]}, Time: {metrics["training_time"]:.1f}s')
     print('='*60)
 
 if __name__ == '__main__': main()

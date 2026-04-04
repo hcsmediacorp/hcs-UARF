@@ -302,6 +302,7 @@ class ModelLoader:
         
         # Torch Compile (PyTorch 2.0+)
         if self.config.compile_model and hasattr(torch, 'compile'):
+            import torch
             print("🔧 Compiling model with torch.compile...")
             self.model = torch.compile(self.model)
         
