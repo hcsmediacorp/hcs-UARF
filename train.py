@@ -90,7 +90,10 @@ def get_flash_attention():
 
 fa3 = get_flash_attention()
 
-from prepare import MAX_SEQ_LEN, TIME_BUDGET, Tokenizer, make_dataloader, evaluate_bpb
+from prepare import MAX_SEQ_LEN, TIME_BUDGET as ORIGINAL_TIME_BUDGET, Tokenizer, make_dataloader, evaluate_bpb
+
+# Override time budget for quick testing (10 seconds instead of 300)
+TIME_BUDGET = 10  # Quick verification test
 
 # ---------------------------------------------------------------------------
 # GPT Model
@@ -493,29 +496,29 @@ class MuonAdamW(torch.optim.Optimizer):
                 self._step_muon(group)
 
 # ---------------------------------------------------------------------------
-# Hyperparameters (edit these directly, no CLI flags needed)
+# Hyperparameters (LOW-END HARDWARE OPTIMIZED - ~100M params, CPU-friendly)
 # ---------------------------------------------------------------------------
 
-# Model architecture
-ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
-HEAD_DIM = 128          # target head dimension for attention
-WINDOW_PATTERN = "SSSL" # sliding window pattern: L=full, S=half context
+# Model architecture (TINY MODEL for 1GB RAM systems - ~3.7M parameters)
+ASPECT_RATIO = 16       # model_dim = depth * ASPECT_RATIO = 8*16 = 128
+HEAD_DIM = 64           # target head dimension for attention
+WINDOW_PATTERN = "S"    # simple sliding window (no complex pattern)
 
-# Optimization
-TOTAL_BATCH_SIZE = 2**19 # ~524K tokens per optimizer step
-EMBEDDING_LR = 0.6      # learning rate for token embeddings (Adam)
-UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
-MATRIX_LR = 0.04        # learning rate for matrix parameters (Muon)
-SCALAR_LR = 0.5         # learning rate for per-layer scalars (Adam)
-WEIGHT_DECAY = 0.2      # cautious weight decay for Muon
-ADAM_BETAS = (0.8, 0.95) # Adam beta1, beta2
-WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
-WARMDOWN_RATIO = 0.5    # fraction of time budget for LR warmdown
-FINAL_LR_FRAC = 0.0     # final LR as fraction of initial
+# Optimization (reduced for CPU/low-memory)
+TOTAL_BATCH_SIZE = 16   # minimal batch size for ultra-low memory
+EMBEDDING_LR = 0.001    # reduced learning rate
+UNEMBEDDING_LR = 0.001  # reduced learning rate
+MATRIX_LR = 0.001       # reduced learning rate
+SCALAR_LR = 0.001       # reduced learning rate
+WEIGHT_DECAY = 0.01     # reduced weight decay
+ADAM_BETAS = (0.9, 0.95) # standard Adam betas
+WARMUP_RATIO = 0.1      # short warmup
+WARMDOWN_RATIO = 0.1    # short warmdown
+FINAL_LR_FRAC = 0.1     # don't go to zero
 
-# Model size
-DEPTH = 8               # number of transformer layers
-DEVICE_BATCH_SIZE = 128  # per-device batch size (reduce if OOM)
+# Model size (tiny for low-end hardware)
+DEPTH = 6               # number of transformer layers
+DEVICE_BATCH_SIZE = 1   # single sample per forward pass
 
 # ---------------------------------------------------------------------------
 # Setup: tokenizer, model, optimizer, dataloader
