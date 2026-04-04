@@ -58,7 +58,7 @@ DtypeType = Any  # Will be torch.dtype when torch is available
 ModelType = Any  # Will be PreTrainedModel when transformers is available
 
 
-from ..core.config import UARFConfig
+from core.config import UARFConfig
 
 
 class ModelRegistry:
