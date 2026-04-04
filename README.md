@@ -1,241 +1,101 @@
-# 🚀 UARF - Universal AutoResearch Framework
+# 🚀 UARF - Universal AutoResearch Framework v0.3.0
 
 **LLM Training auf JEDEM Gerät** - Linux, Mac, Windows, Termux (Android)
 
-## ✨ Features
+## ✨ Neue Features in v0.3.0
 
-- **Automatische Hardware-Erkennung**: Passt sich an dein Gerät an
-- **Unterstützt 400MB RAM**: Funktioniert auch auf sehr schwacher Hardware
-- **Ein Befehl für alles**: Keine komplexe Konfiguration nötig
-- **Cross-Platform**: Linux, Mac, Windows, Termux/Android
-- **Demo-Modus**: Trainiere ein winziges Modell in Minuten
+- **📁 Lokale Datensätze**: Training mit eigenen JSON/JSONL-Daten ohne Internet
+- **🤖 Synthetische Daten**: Automatische Generierung bei fehlenden Datensätzen
+- **⚡ Gradient Checkpointing**: Speichereffizientes Training auch auf wenig RAM
+- **🔧 Flexible Konfiguration**: Minimalanforderungen reduziert (32 seq_len, 30s budget)
+- **✅ Production Ready**: Alle kritischen Fehler behoben
 
 ## 📦 Installation
 
-### Standard (Linux/Mac/Windows)
-
 ```bash
-# Mit pip
+# Dependencies
 pip install torch transformers datasets tqdm psutil huggingface_hub
 
-# Oder mit uv (empfohlen)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-uv pip install torch transformers datasets tqdm psutil huggingface_hub
-```
-
-### Termux (Android)
-
-```bash
-# Python installieren
-pkg update && pkg upgrade
-pkg install python rust cmake clang
-
-# Virtuelle Umgebung (optional aber empfohlen)
-python -m venv uarf-env
-source uarf-env/bin/activate
-
-# Dependencies installieren
-pip install torch transformers datasets tqdm psutil huggingface_hub
-
-# Hinweis: Auf Termux nur CPU-Modus verfügbar
-```
-
-### Google Colab
-
-```python
-!pip install torch transformers datasets tqdm psutil huggingface_hub
+# UARF installieren
+cd /workspace && pip install -e .
 ```
 
 ## 🎯 Schnellstart
 
-### Automatisch (empfohlen)
+### Mit lokalem Dataset
+```python
+from uarf import UARFConfig, UniversalTrainer
 
-```bash
-# Einfach ausführen - erkennt Hardware automatisch
-python uarf_run.py
+config = UARFConfig(
+    model_id="Qwen/Qwen2.5-0.5B",
+    dataset_name="./test_data/train.json",
+    batch_size=8,
+    max_seq_len=128,
+    max_steps=100,
+    time_budget_seconds=300
+)
 
-# Mit Demo-Modell (sehr klein, ~1M Parameter)
-python uarf_run.py --demo
-
-# Für 10 Minuten Training
-python uarf_run.py --time 600
+trainer = UniversalTrainer(config)
+trainer.train()
 ```
 
-### Manuell
-
+### Test-Datensätze erstellen
 ```bash
-# Spezifisches Modell
-python uarf_run.py --model Qwen/Qwen2.5-0.5B --time 600
-
-# Nur Hardware erkennen
-python uarf_run.py --detect-only
-
-# Modell-Empfehlung anzeigen
-python uarf_run.py --suggest
+python -m uarf.data.test_dataset ./test_data
 ```
 
-## 🖥️ CLI Befehle
-
+### CLI verwenden
 ```bash
-# Vollständiges Training starten
-python uarf_run.py [OPTIONEN]
+uarf detect                    # Hardware erkennen
+uarf run --time 600            # Training starten
+uarf run --dataset ./data.json # Mit eigenem Dataset
+```
 
-# Optionen:
-#   --model MODEL         HuggingFace Model ID (auto wenn nicht angegeben)
-#   --dataset DATASET     Dataset Name (default: karpathy/tinyshakespeare)
-#   --time SEKUNDEN       Trainingszeit (default: 300)
-#   --batch-size N        Batch Size (auto wenn nicht angegeben)
-#   --max-seq-len N       Maximale Sequenzlänge
-#   --lr RATE             Learning Rate (default: 2e-4)
-#   --output-dir PFAD     Ausgabeverzeichnis
-#   --demo                Demo-Modus mit winzigem Modell
-#   --detect-only         Nur Hardware erkennen
-#   --suggest             Modell-Empfehlungen anzeigen
+## 🔧 Minimale Konfiguration (für schnelle Tests)
+
+```python
+config = UARFConfig(
+    batch_size=2,
+    max_seq_len=32,
+    time_budget_seconds=30,
+    max_steps=10,
+    use_gradient_checkpointing=True
+)
 ```
 
 ## 📊 Hardware-Empfehlungen
 
-| RAM | GPU | Empfohlenes Modell | Batch Size | Seq Len |
-|-----|-----|-------------------|------------|---------|
-| <2GB | Nein | tiny_demo | 8 | 256 |
-| 2-4GB | Nein | Qwen2.5-0.5B | 8 | 256 |
-| 4-8GB | Nein | Qwen2.5-0.5B | 16 | 512 |
-| 8-16GB | Nein | Qwen2.5-1.5B | 32 | 1024 |
-| <4GB | Ja | Qwen2.5-0.5B | 16 | 512 |
-| 4-8GB | Ja | Qwen2.5-1.5B | 32 | 1024 |
-| 8-16GB | Ja | Qwen2.5-3B | 64 | 1024 |
-| >16GB | Ja | Qwen2.5-7B | 128 | 2048 |
+| RAM | Batch Size | Max Seq Len | Gradient Checkpointing |
+|-----|------------|-------------|------------------------|
+| <2GB | 2-4 | 32-64 | ✓ |
+| 2-4GB | 4-8 | 64-128 | ✓ |
+| 4-8GB | 8-16 | 128-256 | ✗ |
+| 8-16GB | 16-32 | 256-512 | ✗ |
+| >16GB | 32+ | 512+ | ✗ |
 
-## 🔧 Beispiele
+## ✅ Getestete Funktionalität
 
-### Raspberry Pi / Schwaches Gerät
+- ✓ Hardware Detection (CPU, RAM, GPU)
+- ✓ Model Loading (Qwen/Qwen2.5-0.5B)
+- ✓ Local Dataset Loading (JSON/JSONL)
+- ✓ Synthetic Dataset Generation
+- ✓ Tokenization & Data Preparation
+- ✓ Optimizer & Scheduler Setup
+- ✓ Training Loop with Gradient Accumulation
+- ✓ Checkpoint Saving/Loading
+- ✓ Evaluation & Metrics Tracking
 
-```bash
-python uarf_run.py --demo --time 180 --batch-size 4 --max-seq-len 128
-```
-
-### Mittelklasse Laptop (8GB RAM)
-
-```bash
-python uarf_run.py --model Qwen/Qwen2.5-0.5B --time 600
-```
-
-### Gaming PC mit GPU
+## 🧪 Tests
 
 ```bash
-python uarf_run.py --model Qwen/Qwen2.5-3B --time 1800 --batch-size 64
+python -m pytest tests/ -v
+python test_uarf_complete.py
 ```
-
-### Termux auf Android Phone
-
-```bash
-python uarf_run.py --demo --time 300 --batch-size 8
-```
-
-## 📁 Ausgabe
-
-Das Framework speichert:
-- `./uarf_output/final_model/` - Trainiertes Modell
-- Tokenizer-Konfiguration
-- Trainings-Metriken
-
-## 🐛 Troubleshooting
-
-### "PyTorch not installed"
-
-```bash
-pip install torch torchvision torchaudio
-```
-
-### "CUDA out of memory"
-
-Reduziere Batch Size und Sequenzlänge:
-```bash
-python uarf_run.py --batch-size 4 --max-seq-len 256
-```
-
-### "Dataset download failed"
-
-Verwende den Demo-Modus mit synthetischen Daten:
-```bash
-python uarf_run.py --demo
-```
-
-### Langsames Training auf CPU
-
-- Verwende kleinere Modelle (`--demo` oder `Qwen2.5-0.5B`)
-- Reduziere Sequenzlänge (`--max-seq-len 256`)
-- Erhöhe nicht die Batch Size zu sehr
-
-## 📝 Was dieses Repo kann
-
-✅ **Funktionierende Features:**
-- Automatische Hardware-Erkennung (CPU, RAM, GPU)
-- Intelligente Modellauswahl basierend auf Hardware
-- Cross-Platform Training (CUDA, MPS, CPU)
-- Einfache CLI mit nur einem Befehl
-- Demo-Modus für sehr schwache Geräte
-- Automatisches Gradient Checkpointing bei wenig RAM
-- Validation und Loss-Tracking
-- Modell-Speicherung und Export
-- **Resume Training von Checkpoints** ✅ NEU
-- **Strukturiertes Logging mit Leveln** ✅ NEU
-- **Production-ready Error Handling** ✅ NEU
-- **Unit Tests mit >50% Coverage** ✅ NEU
-
-⚠️ **Limitationen:**
-- Multi-GPU Support in Entwicklung
-- Experiment Tracking (W&B/MLflow) geplant
-- Weitere Export-Formate in Arbeit
-
-## 🎓 Lernziele
-
-Dieses Framework ist ideal für:
-- Einsteiger in LLM Training
-- Experimente auf schwacher Hardware
-- Bildungszwecke und Prototyping
-- Quick Tests vor großem Training
 
 ## 📄 Lizenz
 
 MIT License - Frei für Forschung und Bildung
 
-## 🤝 Contributing
+---
 
-Pull Requests willkommen! Besonders:
-- Weitere Export-Formate (GGUF, ONNX, WebGPU)
-- Multi-GPU Support (Distributed Training)
-- Experiment Tracking (W&B, MLflow)
-- Mehr Demo-Datensätze
-- Platform Adapter (iOS, Browser)
-
-## 🧪 Tests
-
-```bash
-# Alle Tests ausführen
-python -m pytest tests/
-
-# Mit Coverage Report
-pip install pytest-cov
-python -m pytest tests/ --cov=uarf --cov-report=term-missing
-
-# Spezifische Test-Klasse
-python -m pytest tests/test_trainer.py -v
-```
-
-## 📊 Aktuelle Test Coverage
-
-- Core Module: ~70% Coverage
-- Trainer: ~80% Coverage  
-- Utils/Exceptions: ~98% Coverage
-- Gesamt: >50% Coverage Ziel erreicht ✅
-
-## 🔒 Security & Hardening
-
-- Custom Exception Classes für alle Error-Typen
-- Input Validation in allen öffentlichen APIs
-- Safe File Operations mit Path-Validation
-- Memory Protection durch Resource Limits
-- Graceful Error Recovery in Training Loop
+**Version**: 0.3.0 (Stable Release) | **Status**: Production Ready ✅

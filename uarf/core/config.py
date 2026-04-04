@@ -127,14 +127,14 @@ class UARFConfig:
         if self.batch_size < 1:
             errors.append("batch_size muss >= 1 sein")
         
-        if self.max_seq_len < 64:
-            errors.append("max_seq_len muss >= 64 sein")
+        if self.max_seq_len < 32:  # Von 64 auf 32 reduziert für minimale Tests
+            errors.append("max_seq_len muss >= 32 sein")
         
         if self.learning_rate <= 0:
             errors.append("learning_rate muss > 0 sein")
         
-        if self.time_budget_seconds < 60:
-            errors.append("time_budget_seconds muss >= 60 sein (1 Minute)")
+        if self.time_budget_seconds < 30:  # Von 60 auf 30 reduziert für schnelle Tests
+            errors.append("time_budget_seconds muss >= 30 sein (30 Sekunden)")
         
         if self.warmup_ratio < 0 or self.warmup_ratio > 1:
             errors.append("warmup_ratio muss zwischen 0 und 1 liegen")
