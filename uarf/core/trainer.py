@@ -6,6 +6,7 @@ Unterstützt Training auf allen Plattformen mit automatischer Anpassung.
 import os
 import time
 import math
+import logging
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple
 from dataclasses import dataclass
@@ -17,6 +18,10 @@ from tqdm import tqdm
 
 from .config import UARFConfig
 from .hardware_detector import HardwareDetector
+from .checkpoint import CheckpointManager
+
+# Logging setup
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -62,6 +67,12 @@ class UniversalTrainer:
         # Training state
         self.global_step = 0
         self.start_time = None
+        
+        # Checkpoint Manager
+        self.checkpoint_manager = CheckpointManager(
+            output_dir=config.output_dir,
+            max_checkpoints=3
+        )
         
     def _setup_device(self) -> torch.device:
         """Richtet das richtige Device ein"""
@@ -300,74 +311,71 @@ class UniversalTrainer:
         avg_loss = total_loss / max(num_batches, 1)
         return avg_loss
     
-    def save_checkpoint(self, path: str):
-        """Speichert Checkpoint"""
-        os.makedirs(path, exist_ok=True)
-        
-        # Modell speichern
-        self.model.save_pretrained(path)
-        self.tokenizer.save_pretrained(path)
-        
-        # Optimizer State
-        torch.save({
-            'optimizer': self.optimizer.state_dict(),
-            'scheduler': self.scheduler.state_dict() if self.scheduler else None,
-            'global_step': self.global_step,
-            'metrics': self.metrics,
-            'config': self.config.to_dict()
-        }, os.path.join(path, 'training_state.pt'))
-        
-        print(f"💾 Checkpoint gespeichert: {path}")
+    def save_checkpoint(self, path: str, is_best: bool = False):
+        """Speichert Checkpoint mit CheckpointManager"""
+        try:
+            metrics_dict = {
+                'steps_completed': self.metrics.steps_completed,
+                'total_tokens': self.metrics.total_tokens,
+                'best_val_loss': self.metrics.best_val_loss,
+                'training_time_seconds': self.metrics.training_time_seconds,
+                'peak_memory_mb': self.metrics.peak_memory_mb,
+            }
+            
+            checkpoint_path = self.checkpoint_manager.save_checkpoint(
+                model=self.model,
+                tokenizer=self.tokenizer,
+                optimizer=self.optimizer,
+                scheduler=self.scheduler,
+                global_step=self.global_step,
+                metrics=metrics_dict,
+                config=self.config.to_dict(),
+                is_best=is_best
+            )
+            print(f"💾 Checkpoint gespeichert: {checkpoint_path}")
+            return checkpoint_path
+        except Exception as e:
+            print(f"❌ Fehler beim Speichern des Checkpoints: {e}")
+            logger.error(f"Checkpoint save failed: {e}")
+            return None
     
     def _resume_training(self, checkpoint_path: str):
         """Setzt Training von einem Checkpoint fort"""
         print(f"\n📥 Resume Training von: {checkpoint_path}")
         
-        checkpoint_path = Path(checkpoint_path)
-        
-        if not checkpoint_path.exists():
-            raise FileNotFoundError(f"Checkpoint nicht gefunden: {checkpoint_path}")
-        
-        training_state_file = checkpoint_path / 'training_state.pt'
-        if not training_state_file.exists():
-            raise FileNotFoundError(f"Training state file nicht gefunden: {training_state_file}")
-        
-        # Lade Model und Tokenizer
-        print("  Lade Modell und Tokenizer...")
-        self.model = AutoModelForCausalLM.from_pretrained(
-            str(checkpoint_path),
-            trust_remote_code=self.config.trust_remote_code
-        ).to(self.device)
-        
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            str(checkpoint_path),
-            trust_remote_code=self.config.trust_remote_code
-        )
-        
-        # Lade Training State
-        print("  Lade Training State...")
-        training_state = torch.load(training_state_file, map_location=self.device)
-        
-        self.global_step = training_state.get('global_step', 0)
-        self.metrics = training_state.get('metrics', self.metrics)
-        
-        # Setup Optimizer und Scheduler
-        self.setup_optimizer()
-        
-        # Lade Optimizer State
-        if 'optimizer' in training_state and self.optimizer is not None:
-            print("  Lade Optimizer State...")
-            self.optimizer.load_state_dict(training_state['optimizer'])
-        
-        # Lade Scheduler State
-        if 'scheduler' in training_state and self.scheduler is not None:
-            print("  Lade Scheduler State...")
-            self.scheduler.load_state_dict(training_state['scheduler'])
-        
-        # Prepare Data
-        self.prepare_data()
-        
-        print(f"✅ Resume erfolgreich: Step {self.global_step:,}")
+        try:
+            # Load checkpoint using CheckpointManager
+            model, tokenizer, optimizer, scheduler, training_state = \
+                self.checkpoint_manager.load_checkpoint(
+                    checkpoint_path=checkpoint_path,
+                    model=self.model,
+                    tokenizer=self.tokenizer,
+                    optimizer=self.optimizer,
+                    scheduler=self.scheduler
+                )
+            
+            self.model = model.to(self.device)
+            self.tokenizer = tokenizer
+            self.optimizer = optimizer
+            self.scheduler = scheduler
+            
+            self.global_step = training_state.get('global_step', 0)
+            
+            # Update metrics
+            saved_metrics = training_state.get('metrics', {})
+            self.metrics.steps_completed = saved_metrics.get('steps_completed', self.global_step)
+            self.metrics.total_tokens = saved_metrics.get('total_tokens', 0)
+            self.metrics.best_val_loss = saved_metrics.get('best_val_loss', float('inf'))
+            
+            # Prepare Data
+            self.prepare_data()
+            
+            print(f"✅ Resume erfolgreich: Step {self.global_step:,}")
+            
+        except Exception as e:
+            print(f"❌ Fehler beim Resume: {e}")
+            logger.error(f"Resume failed: {e}")
+            raise
     
     
     def train(self):
@@ -455,11 +463,11 @@ class UniversalTrainer:
                     
                     # Checkpoint
                     if self.global_step % self.config.save_every_n_steps == 0:
-                        checkpoint_path = os.path.join(
-                            self.config.output_dir,
-                            f"checkpoint-{self.global_step}"
+                        is_best = val_loss <= self.metrics.best_val_loss
+                        self.save_checkpoint(
+                            os.path.join(self.config.output_dir, f"checkpoint-{self.global_step}"),
+                            is_best=is_best
                         )
-                        self.save_checkpoint(checkpoint_path)
                     
                     # Time Budget prüfen
                     elapsed_time = time.time() - self.start_time
@@ -491,7 +499,8 @@ class UniversalTrainer:
             
             # Finales Checkpoint
             final_path = os.path.join(self.config.output_dir, "final")
-            self.save_checkpoint(final_path)
+            is_best = self.metrics.best_val_loss <= float('inf')
+            self.save_checkpoint(final_path, is_best=True)
             
             # Zusammenfassung
             self.print_training_summary()

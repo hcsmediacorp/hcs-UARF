@@ -147,11 +147,54 @@ Beispiele:
         selector.print_suggestions(args.task)
     
     elif args.command == 'export':
-        print("📤 Export-Funktionalität wird entwickelt...")
+        from uarf import UniversalTrainer, UARFConfig
+        from uarf.exports.gguf import export_to_gguf
+        import torch
+        
+        print(f"📤 Exportiere Modell...")
         print(f"Checkpoint: {args.checkpoint}")
         print(f"Format: {args.format}")
         print(f"Quantisierung: {args.quantization}")
-        # TODO: Export-Logik implementieren
+        
+        # Load checkpoint
+        checkpoint_path = Path(args.checkpoint)
+        training_state_file = checkpoint_path / 'training_state.pt'
+        
+        if not training_state_file.exists():
+            print(f"❌ Training state file nicht gefunden: {training_state_file}")
+            sys.exit(1)
+        
+        # Load model and config
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        print("  Lade Modell...")
+        model = AutoModelForCausalLM.from_pretrained(args.checkpoint)
+        tokenizer = AutoTokenizer.from_pretrained(args.checkpoint)
+        
+        training_state = torch.load(training_state_file, map_location='cpu')
+        config = training_state.get('config', {})
+        
+        # Get model state dict
+        model_state = model.state_dict()
+        
+        # Determine output path
+        if args.output:
+            output_path = args.output
+        else:
+            output_name = f"model-{args.quantization.lower()}.gguf"
+            output_path = os.path.join(os.path.dirname(args.checkpoint), output_name)
+        
+        # Export based on format
+        if args.format == 'gguf':
+            export_to_gguf(
+                model_state=model_state,
+                config=config,
+                output_path=output_path,
+                quantization=args.quantization
+            )
+            print(f"✅ Export erfolgreich: {output_path}")
+        else:
+            print(f"⚠️  Format '{args.format}' wird noch nicht vollständig unterstützt.")
+            print("   Nur GGUF-Export ist aktuell implementiert.")
     
     elif args.command == 'detect':
         from uarf import HardwareDetector
