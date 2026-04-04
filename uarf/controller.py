@@ -169,7 +169,8 @@ class UARFController:
     def select_model(
         self,
         max_params_millions: Optional[int] = None,
-        tags: Optional[List[str]] = None
+        tags: Optional[List[str]] = None,
+        respect_env_model: bool = True
     ) -> TaskResult:
         """
         Select best model for current hardware.
@@ -177,12 +178,45 @@ class UARFController:
         Args:
             max_params_millions: Maximum model size in millions of parameters
             tags: Required model tags
+            respect_env_model: If True and UARF_MODEL is set, use that model (if it fits)
         
         Returns:
             TaskResult with selected model info
         """
         try:
             self._ensure_initialized()
+            
+            # Check if user explicitly set a model via env/config
+            env_model_set = self.config.model_id and self.config.model_id != 'hf-internal-testing/tiny-random-gpt2'
+            
+            # If env model is set and we should respect it, try to use it
+            if respect_env_model and env_model_set:
+                # Try to find the env-specified model
+                try:
+                    env_model = self._registry.get_model(self.config.model_id)
+                    if env_model:
+                        # Check if it fits in RAM
+                        if env_model.min_ram_mb <= self.available_ram_mb * 0.8:
+                            self._logger.info(f"Using env-specified model: {env_model.model_id}")
+                            return TaskResult(
+                                success=True,
+                                message=f"Using specified model: {env_model.name}",
+                                data={
+                                    'model': env_model.model_id,
+                                    'name': env_model.name,
+                                    'params_millions': env_model.params_millions,
+                                    'min_ram_mb': env_model.min_ram_mb,
+                                    'tags': env_model.tags,
+                                    'from_env': True
+                                }
+                            )
+                        else:
+                            self._logger.warning(
+                                f"Env model {env_model.model_id} requires {env_model.min_ram_mb}MB "
+                                f"but only {self.available_ram_mb:.0f}MB available. Finding alternative..."
+                            )
+                except Exception:
+                    pass  # Model not found in registry, fall through to auto-selection
             
             # Use config limit or parameter limit
             max_params = max_params_millions or self.config.max_params_millions
