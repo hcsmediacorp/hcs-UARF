@@ -3,6 +3,7 @@ Unit Tests for UARF Trainer Module
 """
 
 import pytest
+import torch
 from pathlib import Path
 import sys
 
