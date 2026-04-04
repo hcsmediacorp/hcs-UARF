@@ -1,0 +1,224 @@
+Metadata-Version: 2.4
+Name: uarf
+Version: 0.3.0
+Summary: Universal AutoResearch Framework - LLM Training on ANY device
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: torch>=2.0.0
+Requires-Dist: transformers>=4.30.0
+Requires-Dist: datasets>=2.14.0
+Requires-Dist: tqdm>=4.65.0
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: huggingface_hub>=0.16.0
+Provides-Extra: cpu
+Requires-Dist: torch>=2.0.0; extra == "cpu"
+Provides-Extra: cuda
+Requires-Dist: torch>=2.0.0; extra == "cuda"
+
+# 🚀 UARF - Universal AutoResearch Framework
+
+**LLM Training auf JEDEM Gerät** - Linux, Mac, Windows, Termux (Android)
+
+## ✨ Features
+
+- **Automatische Hardware-Erkennung**: Passt sich an dein Gerät an
+- **Unterstützt 400MB RAM**: Funktioniert auch auf sehr schwacher Hardware
+- **Ein Befehl für alles**: Keine komplexe Konfiguration nötig
+- **Cross-Platform**: Linux, Mac, Windows, Termux/Android
+- **Demo-Modus**: Trainiere ein winziges Modell in Minuten
+
+## 📦 Installation
+
+### Standard (Linux/Mac/Windows)
+
+```bash
+# Mit pip
+pip install torch transformers datasets tqdm psutil huggingface_hub
+
+# Oder mit uv (empfohlen)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+uv pip install torch transformers datasets tqdm psutil huggingface_hub
+```
+
+### Termux (Android)
+
+```bash
+# Python installieren
+pkg update && pkg upgrade
+pkg install python rust cmake clang
+
+# Virtuelle Umgebung (optional aber empfohlen)
+python -m venv uarf-env
+source uarf-env/bin/activate
+
+# Dependencies installieren
+pip install torch transformers datasets tqdm psutil huggingface_hub
+
+# Hinweis: Auf Termux nur CPU-Modus verfügbar
+```
+
+### Google Colab
+
+```python
+!pip install torch transformers datasets tqdm psutil huggingface_hub
+```
+
+## 🎯 Schnellstart
+
+### Automatisch (empfohlen)
+
+```bash
+# Einfach ausführen - erkennt Hardware automatisch
+python uarf_run.py
+
+# Mit Demo-Modell (sehr klein, ~1M Parameter)
+python uarf_run.py --demo
+
+# Für 10 Minuten Training
+python uarf_run.py --time 600
+```
+
+### Manuell
+
+```bash
+# Spezifisches Modell
+python uarf_run.py --model Qwen/Qwen2.5-0.5B --time 600
+
+# Nur Hardware erkennen
+python uarf_run.py --detect-only
+
+# Modell-Empfehlung anzeigen
+python uarf_run.py --suggest
+```
+
+## 🖥️ CLI Befehle
+
+```bash
+# Vollständiges Training starten
+python uarf_run.py [OPTIONEN]
+
+# Optionen:
+#   --model MODEL         HuggingFace Model ID (auto wenn nicht angegeben)
+#   --dataset DATASET     Dataset Name (default: karpathy/tinyshakespeare)
+#   --time SEKUNDEN       Trainingszeit (default: 300)
+#   --batch-size N        Batch Size (auto wenn nicht angegeben)
+#   --max-seq-len N       Maximale Sequenzlänge
+#   --lr RATE             Learning Rate (default: 2e-4)
+#   --output-dir PFAD     Ausgabeverzeichnis
+#   --demo                Demo-Modus mit winzigem Modell
+#   --detect-only         Nur Hardware erkennen
+#   --suggest             Modell-Empfehlungen anzeigen
+```
+
+## 📊 Hardware-Empfehlungen
+
+| RAM | GPU | Empfohlenes Modell | Batch Size | Seq Len |
+|-----|-----|-------------------|------------|---------|
+| <2GB | Nein | tiny_demo | 8 | 256 |
+| 2-4GB | Nein | Qwen2.5-0.5B | 8 | 256 |
+| 4-8GB | Nein | Qwen2.5-0.5B | 16 | 512 |
+| 8-16GB | Nein | Qwen2.5-1.5B | 32 | 1024 |
+| <4GB | Ja | Qwen2.5-0.5B | 16 | 512 |
+| 4-8GB | Ja | Qwen2.5-1.5B | 32 | 1024 |
+| 8-16GB | Ja | Qwen2.5-3B | 64 | 1024 |
+| >16GB | Ja | Qwen2.5-7B | 128 | 2048 |
+
+## 🔧 Beispiele
+
+### Raspberry Pi / Schwaches Gerät
+
+```bash
+python uarf_run.py --demo --time 180 --batch-size 4 --max-seq-len 128
+```
+
+### Mittelklasse Laptop (8GB RAM)
+
+```bash
+python uarf_run.py --model Qwen/Qwen2.5-0.5B --time 600
+```
+
+### Gaming PC mit GPU
+
+```bash
+python uarf_run.py --model Qwen/Qwen2.5-3B --time 1800 --batch-size 64
+```
+
+### Termux auf Android Phone
+
+```bash
+python uarf_run.py --demo --time 300 --batch-size 8
+```
+
+## 📁 Ausgabe
+
+Das Framework speichert:
+- `./uarf_output/final_model/` - Trainiertes Modell
+- Tokenizer-Konfiguration
+- Trainings-Metriken
+
+## 🐛 Troubleshooting
+
+### "PyTorch not installed"
+
+```bash
+pip install torch torchvision torchaudio
+```
+
+### "CUDA out of memory"
+
+Reduziere Batch Size und Sequenzlänge:
+```bash
+python uarf_run.py --batch-size 4 --max-seq-len 256
+```
+
+### "Dataset download failed"
+
+Verwende den Demo-Modus mit synthetischen Daten:
+```bash
+python uarf_run.py --demo
+```
+
+### Langsames Training auf CPU
+
+- Verwende kleinere Modelle (`--demo` oder `Qwen2.5-0.5B`)
+- Reduziere Sequenzlänge (`--max-seq-len 256`)
+- Erhöhe nicht die Batch Size zu sehr
+
+## 📝 Was dieses Repo kann
+
+✅ **Funktionierende Features:**
+- Automatische Hardware-Erkennung (CPU, RAM, GPU)
+- Intelligente Modellauswahl basierend auf Hardware
+- Cross-Platform Training (CUDA, MPS, CPU)
+- Einfache CLI mit nur einem Befehl
+- Demo-Modus für sehr schwache Geräte
+- Automatisches Gradient Checkpointing bei wenig RAM
+- Validation und Loss-Tracking
+- Modell-Speicherung und Export
+
+⚠️ **Limitationen:**
+- Kein Multi-GPU Support
+- Kein Resume von Checkpoints
+- Begrenzte Export-Formate (GGUF geplant)
+
+## 🎓 Lernziele
+
+Dieses Framework ist ideal für:
+- Einsteiger in LLM Training
+- Experimente auf schwacher Hardware
+- Bildungszwecke und Prototyping
+- Quick Tests vor großem Training
+
+## 📄 Lizenz
+
+MIT License - Frei für Forschung und Bildung
+
+## 🤝 Contributing
+
+Pull Requests willkommen! Besonders:
+- Weitere Export-Formate (GGUF, ONNX)
+- Resume-Funktionalität
+- Multi-GPU Support
+- Mehr Demo-Datensätze
