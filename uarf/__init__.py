@@ -1,20 +1,20 @@
 """
-UARF - Universal AutoResearch Framework v2.0
+UARF - Universal AutoResearch Framework v1.0.0
 One Framework. Every Device. From 256MB to Multi-GPU Clusters.
 
 Made with ❤️ by hcsmedia
 Refactored for unified cross-device deployment.
 """
 
-__version__ = "2.0.0"
+__version__ = "1.0.0"
 __author__ = "hcsmedia"
 
-# Core components (lazy-loaded)
-from core.config_lite import LiteConfig, load_config, quick_config
-from core.device_manager import DeviceManager, select_device, get_device
-from models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model, list_tiny_models
-from logging_module.debug_logger import DebugLogger, setup_logger, get_logger, debug, info, warning, error, success
-from .controller import UARFController, quick_start, detect, suggest, TaskResult
+# Core components (lazy-loaded) - Use absolute imports with package prefix
+from uarf.core.config_lite import LiteConfig, load_config, quick_config
+from uarf.core.device_manager import DeviceManager, select_device, get_device
+from uarf.models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model, list_tiny_models
+from uarf.uarf_logging import DebugLogger, setup_logger, get_logger, debug, info, warning, error, success
+from uarf.controller import UARFController, quick_start, detect, suggest, TaskResult
 
 # Convenience imports
 from typing import Optional, Dict, Any

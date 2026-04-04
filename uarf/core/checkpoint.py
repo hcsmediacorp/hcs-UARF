@@ -11,7 +11,7 @@ from typing import Optional, Dict, Any, Tuple
 from datetime import datetime
 import shutil
 
-from utils.exceptions import CheckpointError, ResourceExhaustedError
+from uarf.utils.exceptions import CheckpointError, ResourceExhaustedError
 
 
 class CheckpointManager:

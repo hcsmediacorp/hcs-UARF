@@ -12,10 +12,10 @@ import json
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from core.config import UARFConfig
-from core.trainer import UniversalTrainer
-from core.hardware_detector import HardwareDetector
-from core.swap_manager import SwapManager, SwapConfig
+from uarf.core.config import UARFConfig
+from uarf.core.trainer import UniversalTrainer
+from uarf.core.hardware_detector import HardwareDetector
+from uarf.core.swap_manager import SwapManager, SwapConfig
 
 
 class AutoMode:
