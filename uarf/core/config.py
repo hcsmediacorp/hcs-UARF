@@ -19,6 +19,7 @@ class UARFConfig:
     # Modell-Konfiguration
     model_id: str = "Qwen/Qwen2.5-0.5B"
     model_name: Optional[str] = None
+    task_type: str = "text-generation"  # text-generation, classification, qa, etc.
     trust_remote_code: bool = True
     
     # Hardware & Performance
