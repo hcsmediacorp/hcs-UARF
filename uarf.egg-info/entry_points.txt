@@ -1,0 +1,2 @@
+[console_scripts]
+uarf = uarf.cli.uarf_cli:main
