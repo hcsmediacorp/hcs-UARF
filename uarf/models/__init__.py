@@ -10,6 +10,9 @@ Import registry functions directly from uarf.models.registry for low-RAM operati
 
 from typing import Dict, List, Optional, Any, Type, Tuple, Union
 
+# Test/mocking compatibility symbols
+AutoTokenizer = None
+
 
 def _lazy_import_torch():
     """Lazy import torch only when needed."""
@@ -32,16 +35,18 @@ def _lazy_import_transformers():
             AutoModelForSequenceClassification,
             AutoModelForTokenClassification,
             AutoModelForQuestionAnswering,
-            AutoTokenizer,
+            AutoTokenizer as _AutoTokenizer,
             PreTrainedModel,
             PreTrainedTokenizer,
         )
+        global AutoTokenizer
+        AutoTokenizer = _AutoTokenizer
         return {
             'AutoModelForCausalLM': AutoModelForCausalLM,
             'AutoModelForSequenceClassification': AutoModelForSequenceClassification,
             'AutoModelForTokenClassification': AutoModelForTokenClassification,
             'AutoModelForQuestionAnswering': AutoModelForQuestionAnswering,
-            'AutoTokenizer': AutoTokenizer,
+            'AutoTokenizer': _AutoTokenizer,
             'PreTrainedModel': PreTrainedModel,
             'PreTrainedTokenizer': PreTrainedTokenizer,
         }
@@ -214,10 +219,14 @@ class ModelLoader:
     
     def load_tokenizer(self) -> Any:
         """Load tokenizer with optimal settings."""
-        transformers = _lazy_import_transformers()
-        AutoTokenizer = transformers['AutoTokenizer']
+        global AutoTokenizer
+        if AutoTokenizer is None:
+            transformers = _lazy_import_transformers()
+            tokenizer_cls = transformers['AutoTokenizer']
+        else:
+            tokenizer_cls = AutoTokenizer
         
-        self.tokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer = tokenizer_cls.from_pretrained(
             self.config.model_id,
             trust_remote_code=self.config.trust_remote_code,
             padding_side="right",
