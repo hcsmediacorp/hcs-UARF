@@ -165,6 +165,10 @@ class UARFController:
                 error=str(e),
                 recovery_suggestion="Try running with UARF_DEVICE=cpu"
             )
+
+    def detect(self) -> TaskResult:
+        """Compatibility wrapper for hardware detection."""
+        return self.detect_hardware()
     
     def select_model(
         self,
@@ -299,6 +303,30 @@ class UARFController:
         
         except Exception as e:
             return TaskResult(success=False, message="Failed to list models", error=str(e))
+
+    def suggest(self, task: str = "text-generation", limit: int = 5) -> TaskResult:
+        """
+        Compatibility wrapper for model suggestion used by CLI.
+
+        Args:
+            task: Task type hint (reserved for future use)
+            limit: Maximum number of candidates to return
+        """
+        selection = self.select_model()
+        if not selection.success:
+            return selection
+
+        models_result = self.list_models()
+        candidates = []
+        if models_result.success and models_result.data:
+            candidates = models_result.data.get("models", [])[-limit:]
+
+        payload = {
+            "task": task,
+            "suggested_model": selection.data,
+            "candidates": candidates,
+        }
+        return TaskResult(success=True, message="Model suggestion ready", data=payload)
     
     # === CONFIGURATION ===
     
@@ -415,6 +443,7 @@ class UARFController:
         task_map = {
             'detect': self.detect_hardware,
             'select_model': self.select_model,
+            'suggest': self.suggest,
             'list_models': self.list_models,
             'show_config': self.show_config,
             'update_config': self.update_config,
@@ -471,6 +500,57 @@ class UARFController:
             print(f"   Status: {'✅ OK' if data['is_safe'] else '⚠️ LOW'}")
         
         print("\n" + "=" * 60)
+
+    def run_training(self, text: Optional[str] = None) -> TaskResult:
+        """
+        Run a minimal end-to-end training task.
+
+        The controller keeps this intentionally lightweight and delegates
+        heavy lifting to UniversalTrainer.
+        """
+        try:
+            from uarf.core.config import UARFConfig
+            from uarf.core.trainer import UniversalTrainer
+
+            model_result = self.select_model()
+            if model_result.success and model_result.data and model_result.data.get("model"):
+                self.config.model_id = model_result.data["model"]
+
+            dataset_name = self.config.dataset_path or "karpathy/tinyshakespeare"
+            if text and text.strip():
+                # Inline text datasets are not persisted yet; fallback dataset is used.
+                self._logger.info("Received inline text input; using configured dataset backend")
+
+            train_cfg = UARFConfig(
+                model_id=self.config.model_id,
+                dataset_name=dataset_name,
+                time_budget_seconds=self.config.time_budget_seconds,
+                output_dir=self.config.output_dir,
+                batch_size=self.config.batch_size,
+                max_seq_len=self.config.max_seq_len,
+                gradient_accumulation_steps=self.config.gradient_accumulation_steps,
+                learning_rate=self.config.learning_rate,
+                use_gradient_checkpointing=self.config.use_gradient_checkpointing,
+                compile_model=self.config.compile_model,
+                device=self.config.device,
+            )
+
+            trainer = UniversalTrainer(train_cfg)
+            trainer.train()
+
+            return TaskResult(
+                success=True,
+                message="Training completed",
+                data={"output_path": train_cfg.output_dir, "model": train_cfg.model_id},
+            )
+        except Exception as e:
+            self._logger.error(f"Training failed: {e}")
+            return TaskResult(
+                success=False,
+                message="Training failed",
+                error=str(e),
+                recovery_suggestion="Run with --demo or set UARF_DEVICE=cpu",
+            )
 
 
 # Convenience functions for Qwen Chat usage

@@ -11,7 +11,9 @@ __author__ = "hcsmedia"
 
 # Core components (lazy-loaded) - Use absolute imports with package prefix
 from uarf.core.config_lite import LiteConfig, load_config, quick_config
+from uarf.core.config import UARFConfig
 from uarf.core.device_manager import DeviceManager, select_device, get_device
+from uarf.core.trainer import UniversalTrainer
 from uarf.models.registry import ModelRegistry, ModelEntry, get_registry, suggest_model, list_tiny_models
 from uarf.uarf_logging import DebugLogger, setup_logger, get_logger, debug, info, warning, error, success
 from uarf.controller import UARFController, quick_start, detect, suggest, TaskResult
@@ -87,6 +89,7 @@ def train(
 __all__ = [
     # Config
     "LiteConfig",
+    "UARFConfig",
     "load_config",
     "quick_config",
     
@@ -118,6 +121,7 @@ __all__ = [
     "detect",
     "suggest",
     "TaskResult",
+    "UniversalTrainer",
     
     # Convenience
     "train",

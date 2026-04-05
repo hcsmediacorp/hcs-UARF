@@ -151,19 +151,29 @@ def get_platform_adapter(platform_type: PlatformType) -> PlatformAdapter:
     if platform_type == PlatformType.ANDROID:
         from .android.adapter import AndroidAdapter
         return AndroidAdapter()
-    elif platform_type == PlatformType.COLAB:
+    if platform_type == PlatformType.COLAB:
         from .colab.adapter import ColabAdapter
         return ColabAdapter()
-    elif platform_type == PlatformType.WINDOWS:
-        from .windows.adapter import WindowsAdapter
-        return WindowsAdapter()
-    elif platform_type == PlatformType.CLUSTER:
-        from .cluster.adapter import ClusterAdapter
-        return ClusterAdapter()
-    else:
-        # Default to generic Linux adapter
-        from .linux.adapter import LinuxAdapter
-        return LinuxAdapter()
+
+    # Optional adapters may not be implemented yet.
+    if platform_type == PlatformType.WINDOWS:
+        try:
+            from .windows.adapter import WindowsAdapter
+            return WindowsAdapter()
+        except Exception as e:
+            raise NotImplementedError("Windows adapter is not implemented yet") from e
+
+    if platform_type == PlatformType.CLUSTER:
+        try:
+            from .cluster.adapter import ClusterAdapter
+            return ClusterAdapter()
+        except Exception as e:
+            raise NotImplementedError("Cluster adapter is not implemented yet") from e
+
+    raise NotImplementedError(
+        f"No adapter implemented for platform type '{platform_type.value}'. "
+        "Available adapters: android, colab."
+    )
 
 
 __all__ = [

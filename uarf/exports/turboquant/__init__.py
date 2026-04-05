@@ -26,6 +26,7 @@ class QuantizationLevel(Enum):
     FP8_E4M3 = "fp8_e4m3"
     FP8_E5M2 = "fp8_e5m2"
     INT8 = "int8"
+    AQT_INT8 = "aqt_int8"
     INT4 = "int4"
     MIXED = "mixed"
 
@@ -88,7 +89,7 @@ class TurboQuantEngine:
             if hasattr(tensor, 'numpy'):
                 tensor = tensor.numpy()
             
-            if self.quant_config.quantization == QuantizationLevel.INT8:
+            if self.quant_config.quantization in (QuantizationLevel.INT8, QuantizationLevel.AQT_INT8):
                 q_tensor, scale, zero_point = self._quantize_int8(tensor)
                 quantized[name] = q_tensor
                 quantized[f"{name}_scale"] = scale
@@ -118,30 +119,40 @@ class TurboQuantEngine:
         return quantized
     
     def _quantize_int8(self, tensor: np.ndarray) -> Tuple[np.ndarray, float, int]:
-        """Quantize tensor to INT8"""
+        """Quantize tensor to UINT8 with safe handling for constant tensors."""
         min_val = np.min(tensor)
         max_val = np.max(tensor)
         
         # Compute scale and zero point
-        scale = (max_val - min_val) / 255.0
+        dynamic_range = max_val - min_val
+        if dynamic_range <= 1e-12:
+            return np.zeros_like(tensor, dtype=np.uint8), 1.0, 0
+
+        scale = dynamic_range / 255.0
         zero_point = int(round(-min_val / scale))
         
         # Quantize
-        q_tensor = np.round(tensor / scale + zero_point).astype(np.uint8)
+        q_tensor = np.round(tensor / scale + zero_point).clip(0, 255).astype(np.uint8)
         
         return q_tensor, float(scale), zero_point
     
     def _quantize_int4(self, tensor: np.ndarray) -> Tuple[np.ndarray, float, int]:
-        """Quantize tensor to INT4 (packed)"""
+        """Quantize tensor to INT4 (packed) with flattened storage."""
         min_val = np.min(tensor)
         max_val = np.max(tensor)
         
         # Compute scale and zero point
-        scale = (max_val - min_val) / 15.0
+        dynamic_range = max_val - min_val
+        if dynamic_range <= 1e-12:
+            flat = np.zeros(tensor.size, dtype=np.uint8)
+            packed = np.zeros(flat.size // 2 + flat.size % 2, dtype=np.uint8)
+            return packed, 1.0, 0
+
+        scale = dynamic_range / 15.0
         zero_point = int(round(-min_val / scale))
         
         # Quantize to 0-15 range
-        q_tensor = np.round(tensor / scale + zero_point).clip(0, 15).astype(np.uint8)
+        q_tensor = np.round(tensor / scale + zero_point).clip(0, 15).astype(np.uint8).flatten()
         
         # Pack two values per byte
         packed = np.zeros(len(q_tensor) // 2 + len(q_tensor) % 2, dtype=np.uint8)
